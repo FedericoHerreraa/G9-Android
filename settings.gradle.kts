@@ -10,6 +10,9 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    plugins {
+        id("com.google.dagger.hilt.android") version "2.51.1"
+    }
 }
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
