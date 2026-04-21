@@ -1,11 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-<<<<<<< HEAD
-    tools:context="com.example.desarrollo_apps_1.MainActivity">
-=======
-    tools:context="com.example.desarrollo_apps_1.ui.MainActivity">
->>>>>>> 6396a72 (agregando hilt, glide, algunas librerias mas y creando estructura inicial del proyecto)
+    tools:context="com.example.desarrollo_apps_1.MainActivity$MainActivity">
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

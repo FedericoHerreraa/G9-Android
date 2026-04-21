@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.0"
+agp = "8.7.3"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
@@ -8,17 +8,15 @@ material = "1.10.0"
 constraintlayout = "2.1.4"
 navigationFragment = "2.6.0"
 navigationUi = "2.6.0"
-<<<<<<< HEAD
-=======
 activity = "1.8.0"
 navigation = "2.8.9"
 retrofit = "2.9.0"
 glide = "4.16.0"
-hilt = "2.59.2"
+hilt = "2.51.1"
 okhttp = "4.12.0"
 room = "2.6.1"
 securityCrypto = "1.1.0-alpha06"
->>>>>>> 6396a72 (agregando hilt, glide, algunas librerias mas y creando estructura inicial del proyecto)
+lifecycle = "2.7.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -29,11 +27,6 @@ material = { group = "com.google.android.material", name = "material", version.r
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
-<<<<<<< HEAD
-
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-=======
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -41,12 +34,13 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
+lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycle" }
+lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "lifecycle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
->>>>>>> 6396a72 (agregando hilt, glide, algunas librerias mas y creando estructura inicial del proyecto)
-

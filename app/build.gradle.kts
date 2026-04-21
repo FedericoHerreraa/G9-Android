@@ -40,31 +40,31 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.activity)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
 
-    // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    // Retrofit & OkHttp
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.okhttp)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    annotationProcessor("com.google.dagger:hilt-compiler:2.51.1")
+    implementation(libs.hilt.android)
+    annotationProcessor(libs.hilt.compiler)
 
-    // ViewModel y LiveData
-    implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
+    // Room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    // Glide
+    implementation(libs.glide)
+
+    // Others
+    implementation(libs.security.crypto)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(libs.activity)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.glide)
-    implementation(libs.okhttp)
-    implementation(libs.hilt.android)
-    annotationProcessor(libs.hilt.compiler)
-    implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
-    implementation(libs.security.crypto)
 }
