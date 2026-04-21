@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private static final String BASE_URL = "https://api.xplorenow.com/";
+    private static final String BASE_URL = "https://backend-apps-1.onrender.com/";
 
     @Provides
     @Singleton

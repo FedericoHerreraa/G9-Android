@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
+import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.network.ApiService;
 
 import javax.inject.Inject;
@@ -27,12 +28,10 @@ public class AuthRepository {
         this.tokenManager = tokenManager;
     }
 
-    // Estados posibles
     public enum AuthState {
         LOADING, SUCCESS, ERROR
     }
 
-    // Login clásico
     public LiveData<AuthState> login(String email, String password) {
         MutableLiveData<AuthState> result = new MutableLiveData<>();
         result.setValue(AuthState.LOADING);
@@ -45,8 +44,6 @@ public class AuthRepository {
                     tokenManager.saveToken(response.body().getToken());
                     tokenManager.saveEmail(response.body().getEmail());
                     result.setValue(AuthState.SUCCESS);
-                } else if (response.code() == 401) {
-                    result.setValue(AuthState.ERROR);
                 } else {
                     result.setValue(AuthState.ERROR);
                 }
@@ -61,15 +58,14 @@ public class AuthRepository {
         return result;
     }
 
-    // Enviar OTP
     public LiveData<AuthState> sendOtp(String email) {
         MutableLiveData<AuthState> result = new MutableLiveData<>();
         result.setValue(AuthState.LOADING);
 
-        LoginRequest request = new LoginRequest(email, null);
-        apiService.sendOtp(request).enqueue(new Callback<AuthResponse>() {
+        OtpRequest request = new OtpRequest(email);
+        apiService.sendOtp(request).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     result.setValue(AuthState.SUCCESS);
                 } else {
@@ -78,7 +74,7 @@ public class AuthRepository {
             }
 
             @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 result.setValue(AuthState.ERROR);
             }
         });
@@ -86,42 +82,16 @@ public class AuthRepository {
         return result;
     }
 
-    // Verificar OTP
     public LiveData<AuthState> verifyOtp(String email, String otp) {
         MutableLiveData<AuthState> result = new MutableLiveData<>();
         result.setValue(AuthState.LOADING);
 
-        LoginRequest request = new LoginRequest(email, otp);
+        OtpRequest request = new OtpRequest(email, otp);
         apiService.verifyOtp(request).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenManager.saveToken(response.body().getToken());
-                    result.setValue(AuthState.SUCCESS);
-                } else {
-                    result.setValue(AuthState.ERROR);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
-                result.setValue(AuthState.ERROR);
-            }
-        });
-
-        return result;
-    }
-
-    // Reenviar OTP
-    public LiveData<AuthState> resendOtp(String email) {
-        MutableLiveData<AuthState> result = new MutableLiveData<>();
-        result.setValue(AuthState.LOADING);
-
-        LoginRequest request = new LoginRequest(email, null);
-        apiService.resendOtp(request).enqueue(new Callback<AuthResponse>() {
-            @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                if (response.isSuccessful()) {
                     result.setValue(AuthState.SUCCESS);
                 } else {
                     result.setValue(AuthState.ERROR);

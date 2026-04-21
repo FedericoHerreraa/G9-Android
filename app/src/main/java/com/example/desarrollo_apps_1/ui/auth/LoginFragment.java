@@ -39,7 +39,6 @@ public class LoginFragment extends Fragment {
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        // Botón login clásico
         binding.btnLogin.setOnClickListener(v -> {
             String email = binding.etEmail.getText().toString().trim();
             String password = binding.etPassword.getText().toString().trim();
@@ -65,7 +64,6 @@ public class LoginFragment extends Fragment {
             });
         });
 
-        // Botón enviar OTP
         binding.btnSendOtp.setOnClickListener(v -> {
             String email = binding.etEmail.getText().toString().trim();
 

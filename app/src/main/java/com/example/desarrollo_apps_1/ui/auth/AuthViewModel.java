@@ -32,7 +32,7 @@ public class AuthViewModel extends ViewModel {
     }
 
     public LiveData<AuthRepository.AuthState> resendOtp(String email) {
-        return authRepository.resendOtp(email);
+        return authRepository.sendOtp(email);
     }
 
     public void logout() {
