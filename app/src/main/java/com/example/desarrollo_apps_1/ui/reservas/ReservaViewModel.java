@@ -3,7 +3,7 @@ package com.example.desarrollo_apps_1.ui.reservas;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.desarrollo_apps_1.data.local.db.ReservaEntity;
+import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.repository.ReservaRepository;
 
 import java.util.List;
@@ -22,16 +22,15 @@ public class ReservaViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public LiveData<List<ReservaEntity>> getMisReservas() {
+    public LiveData<List<Reserva>> getMisReservas() {
         return repository.getMisReservas();
     }
 
-    public LiveData<String> crearReserva(int actividadId, String actividadNombre,
-                                          String fecha, int cantidadPersonas) {
-        return repository.crearReserva(actividadId, actividadNombre, fecha, cantidadPersonas);
+    public LiveData<String> crearReserva(int actividadId, String fecha, int cantidadPersonas) {
+        return repository.crearReserva(actividadId, fecha, cantidadPersonas);
     }
 
-    public LiveData<String> cancelarReserva(ReservaEntity reserva) {
-        return repository.cancelarReserva(reserva);
+    public LiveData<String> cancelarReserva(int reservaId) {
+        return repository.cancelarReserva(reservaId);
     }
 }

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.desarrollo_apps_1.R;
-import com.example.desarrollo_apps_1.data.local.db.ReservaEntity;
+import com.example.desarrollo_apps_1.data.model.Reserva;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +19,17 @@ import java.util.List;
 public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ViewHolder> {
 
     public interface OnCancelarListener {
-        void onCancelar(ReservaEntity reserva);
+        void onCancelar(Reserva reserva);
     }
 
-    private final List<ReservaEntity> items = new ArrayList<>();
+    private final List<Reserva> items = new ArrayList<>();
     private final OnCancelarListener listener;
 
     public ReservaAdapter(OnCancelarListener listener) {
         this.listener = listener;
     }
 
-    public void submitList(List<ReservaEntity> nuevaLista) {
+    public void submitList(List<Reserva> nuevaLista) {
         items.clear();
         if (nuevaLista != null) items.addAll(nuevaLista);
         notifyDataSetChanged();
@@ -59,7 +59,6 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ViewHold
         private final TextView tvPersonas;
         private final TextView tvPrecio;
         private final TextView tvEstado;
-        private final TextView tvSyncBadge;
         private final Button btnCancelar;
 
         ViewHolder(View itemView) {
@@ -69,17 +68,14 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ViewHold
             tvPersonas = itemView.findViewById(R.id.tvReservaPersonas);
             tvPrecio = itemView.findViewById(R.id.tvReservaPrecio);
             tvEstado = itemView.findViewById(R.id.tvReservaEstado);
-            tvSyncBadge = itemView.findViewById(R.id.tvSyncBadge);
             btnCancelar = itemView.findViewById(R.id.btnCancelarReserva);
         }
 
-        void bind(ReservaEntity reserva) {
-            tvNombre.setText(reserva.getActividadNombre());
+        void bind(Reserva reserva) {
+            tvNombre.setText(reserva.getActividad_nombre());
             tvFecha.setText("Fecha: " + reserva.getFecha());
-            tvPersonas.setText("Personas: " + reserva.getCantidadPersonas());
-            tvPrecio.setText(reserva.getTotalPrecio() > 0
-                    ? "Total: $" + String.format("%.2f", reserva.getTotalPrecio())
-                    : "Precio: por confirmar");
+            tvPersonas.setText("Personas: " + reserva.getCantidad_personas());
+            tvPrecio.setText("Total: $" + String.format("%.2f", reserva.getTotal_precio()));
 
             String estado = reserva.getEstado();
             tvEstado.setText(estado);
@@ -93,16 +89,6 @@ public class ReservaAdapter extends RecyclerView.Adapter<ReservaAdapter.ViewHold
                 default:
                     tvEstado.setTextColor(Color.parseColor("#E65100"));
                     break;
-            }
-
-            String syncStatus = reserva.getSyncStatus();
-            if (ReservaEntity.SYNC_PENDING_CREATE.equals(syncStatus)
-                    || ReservaEntity.SYNC_PENDING_CANCEL.equals(syncStatus)) {
-                tvSyncBadge.setVisibility(View.VISIBLE);
-                tvSyncBadge.setText(ReservaEntity.SYNC_PENDING_CREATE.equals(syncStatus)
-                        ? "Pendiente de envío" : "Cancelación pendiente");
-            } else {
-                tvSyncBadge.setVisibility(View.GONE);
             }
 
             boolean puedeCancel = !"CANCELADA".equals(estado);

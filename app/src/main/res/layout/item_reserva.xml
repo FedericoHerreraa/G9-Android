@@ -47,34 +47,12 @@
             android:textColor="#555555"
             android:layout_marginBottom="6dp" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvReservaEstado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvReservaEstado"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvSyncBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#FFF3E0"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:textSize="11sp"
-                android:textColor="#E65100"
-                android:visibility="gone" />
-
-        </LinearLayout>
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnCancelarReserva"

@@ -62,7 +62,7 @@ public class CrearReservaFragment extends Fragment {
         etFecha.setFocusable(false);
         etFecha.setOnClickListener(v -> mostrarDatePicker());
 
-        btnConfirmar.setOnClickListener(v -> confirmarReserva(actividadId, actividadNombre));
+        btnConfirmar.setOnClickListener(v -> confirmarReserva(actividadId));
     }
 
     private void mostrarDatePicker() {
@@ -79,7 +79,7 @@ public class CrearReservaFragment extends Fragment {
         dialog.show();
     }
 
-    private void confirmarReserva(int actividadId, String actividadNombre) {
+    private void confirmarReserva(int actividadId) {
         String fecha = etFecha.getText().toString().trim();
         String cantStr = etCantidad.getText().toString().trim();
 
@@ -107,18 +107,13 @@ public class CrearReservaFragment extends Fragment {
         btnConfirmar.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
-        viewModel.crearReserva(actividadId, actividadNombre, fecha, cantidadPersonas)
+        viewModel.crearReserva(actividadId, fecha, cantidadPersonas)
                 .observe(getViewLifecycleOwner(), result -> {
                     progressBar.setVisibility(View.GONE);
                     btnConfirmar.setEnabled(true);
 
                     if (ReservaRepository.STATE_SUCCESS.equals(result)) {
                         Toast.makeText(requireContext(), "¡Reserva creada!", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).popBackStack();
-                    } else if (ReservaRepository.STATE_QUEUED.equals(result)) {
-                        Toast.makeText(requireContext(),
-                                "Sin conexión: reserva guardada localmente y se enviará al reconectar",
-                                Toast.LENGTH_LONG).show();
                         Navigation.findNavController(requireView()).popBackStack();
                     } else {
                         Toast.makeText(requireContext(),

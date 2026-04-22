@@ -47,12 +47,9 @@ public class MisReservasFragment extends Fragment {
         RecyclerView rvReservas = view.findViewById(R.id.rvReservas);
 
         adapter = new ReservaAdapter(reserva ->
-                viewModel.cancelarReserva(reserva).observe(getViewLifecycleOwner(), result -> {
+                viewModel.cancelarReserva(reserva.getId()).observe(getViewLifecycleOwner(), result -> {
                     if (ReservaRepository.STATE_SUCCESS.equals(result)) {
                         Toast.makeText(requireContext(), "Reserva cancelada", Toast.LENGTH_SHORT).show();
-                    } else if (ReservaRepository.STATE_QUEUED.equals(result)) {
-                        Toast.makeText(requireContext(),
-                                "Sin conexión: cancelación guardada localmente", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(requireContext(), "Error al cancelar la reserva", Toast.LENGTH_SHORT).show();
                     }
