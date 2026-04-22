@@ -43,4 +43,12 @@ public class TokenManager {
     public void logout() {
         prefs.edit().clear().apply();
     }
+
+    public void savePreferencias(String preferencias) {
+        prefs.edit().putString("preferencias", preferencias).apply();
+    }
+
+    public String getPreferencias() {
+        return prefs.getString("preferencias", null);
+    }
 }
