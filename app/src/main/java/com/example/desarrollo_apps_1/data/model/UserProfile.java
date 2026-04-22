@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserProfile {
-    private String id;
+    private String uid;
     private String email;
     private String name;
     private String phone;
@@ -14,7 +14,7 @@ public class UserProfile {
         this.preferences = new ArrayList<>();
     }
 
-    public String getId() { return id; }
+    public String getUid() { return uid; }
     public String getEmail() { return email; }
     public String getName() { return name; }
     public String getPhone() { return phone; }
