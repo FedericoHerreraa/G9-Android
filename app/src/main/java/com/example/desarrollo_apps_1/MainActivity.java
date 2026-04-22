@@ -15,6 +15,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.desarrollo_apps_1.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -35,7 +38,12 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment_content_main);
         NavController navController = navHostFragment.getNavController();
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+
+        Set<Integer> topLevelDestinations = new HashSet<>();
+        topLevelDestinations.add(R.id.loginFragment);
+        topLevelDestinations.add(R.id.homeFragment);
+
+        appBarConfiguration = new AppBarConfiguration.Builder(topLevelDestinations).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
@@ -44,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAnchorView(R.id.fab)
                         .setAction("Action", null).show();
+            }
+        });
+
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.loginFragment) {
+                if (getSupportActionBar() != null) getSupportActionBar().hide();
+            } else {
+                if (getSupportActionBar() != null) getSupportActionBar().show();
             }
         });
     }

@@ -41,10 +41,16 @@ public class HomeFragment extends Fragment {
 
         binding.tvEmail.setText(tokenManager.getEmail());
 
+        binding.btnActividades.setOnClickListener(v -> {
+            Navigation.findNavController(view)
+                    .navigate(R.id.action_home_to_actividades);
+        });
+
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
-            Navigation.findNavController(view)
-                    .navigate(R.id.action_auth_to_home);
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         });
     }
 

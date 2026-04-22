@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calificar Actividad"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Puntaje Actividad (1-5):"
+            android:layout_marginBottom="4dp"/>
+
+        <RatingBar
+            android:id="@+id/rbActividad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Puntaje Guía (1-5):"
+            android:layout_marginBottom="4dp"/>
+
+        <RatingBar
+            android:id="@+id/rbGuia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1.0"
+            android:layout_marginBottom="16dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Comentario adicional (opcional)"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etComentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:lines="3"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnEnviarReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar Calificación"
+            android:backgroundTint="#FF6B35"/>
+
+    </LinearLayout>
+</ScrollView>

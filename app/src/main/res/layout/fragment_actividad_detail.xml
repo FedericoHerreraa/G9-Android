@@ -129,6 +129,15 @@
             android:textSize="14sp"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/btnCalificar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Calificar Experiencia"
+            android:visibility="gone"
+            android:backgroundTint="#FF6B35" />
+
     </LinearLayout>
 
 </ScrollView>

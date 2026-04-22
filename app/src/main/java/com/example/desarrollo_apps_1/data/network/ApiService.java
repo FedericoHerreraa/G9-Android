@@ -6,6 +6,7 @@ import com.example.desarrollo_apps_1.data.model.AuthResponse;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
+import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 
 import java.util.List;
 
@@ -47,5 +48,6 @@ public interface ApiService {
     @GET("actividades/recomendadas")
     Call<List<Actividad>> getRecomendadas(@Query("preferencias") String preferencias);
 
-
+    @POST("usuarios/historial/review")
+    Call<Void> postReview(@Body ReviewRequest review);
 }

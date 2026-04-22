@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -12,11 +13,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 import com.example.desarrollo_apps_1.data.network.ApiService;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -64,6 +69,7 @@ public class ActividadDetailFragment extends Fragment {
         TextView tvPrecio = view.findViewById(R.id.tvPrecio);
         TextView tvCupos = view.findViewById(R.id.tvCupos);
         TextView tvPolitica = view.findViewById(R.id.tvPolitica);
+        Button btnCalificar = view.findViewById(R.id.btnCalificar);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -107,10 +113,29 @@ public class ActividadDetailFragment extends Fragment {
                     tvCupos.setVisibility(View.VISIBLE);
                     tvPolitica.setVisibility(View.VISIBLE);
 
+                    // Lógica para mostrar botón de calificar (Simulada para el ejemplo con 48hs)
+                    // En una app real, compararíamos la fecha de finalización de la actividad 
+                    // que debería venir en el objeto Actividad o Reserva.
+                    // Como el modelo actual no tiene fecha de finalización clara, 
+                    // dejamos el botón visible pero con la lógica comentada para cuando el campo esté disponible.
+                    
+                    /*
+                    long fortyEightHoursInMillis = 48 * 60 * 60 * 1000;
+                    if (System.currentTimeMillis() > (fechaFinalizacionActividad + fortyEightHoursInMillis)) {
+                        btnCalificar.setVisibility(View.VISIBLE);
+                    }
+                    */
+                    
+                    btnCalificar.setVisibility(View.VISIBLE); // Visible por ahora para desarrollo
+                    btnCalificar.setOnClickListener(v -> {
+                        Bundle args = new Bundle();
+                        args.putInt("actividadId", actividad.getId());
+                        Navigation.findNavController(view).navigate(R.id.action_detail_to_review, args);
+                    });
+
                 } else {
                     tvError.setText("Error " + response.code() + ": no se pudo cargar el detalle.");
                     tvError.setVisibility(View.VISIBLE);
-                    Log.e(TAG, "Error HTTP: " + response.code());
                 }
             }
 
@@ -119,7 +144,6 @@ public class ActividadDetailFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 tvError.setText("Error de red: " + t.getMessage());
                 tvError.setVisibility(View.VISIBLE);
-                Log.e(TAG, "onFailure: " + t.getMessage());
             }
         });
     }
