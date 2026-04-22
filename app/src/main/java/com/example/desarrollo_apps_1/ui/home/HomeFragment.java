@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment {
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
             Navigation.findNavController(view)
-                    .navigate(R.id.action_homeFragment_to_loginFragment);
+                    .navigate(R.id.action_auth_to_home);
         });
     }
 
