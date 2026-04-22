@@ -55,7 +55,7 @@ public class LoginFragment extends Fragment {
                 } else if (state == AuthRepository.AuthState.SUCCESS) {
                     binding.progressBar.setVisibility(View.GONE);
                     Navigation.findNavController(view)
-                            .navigate(R.id.action_loginFragment_to_homeFragment);
+                            .navigate(R.id.action_auth_to_home);
                 } else if (state == AuthRepository.AuthState.ERROR) {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
