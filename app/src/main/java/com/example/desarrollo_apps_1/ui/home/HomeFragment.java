@@ -50,6 +50,11 @@ public class HomeFragment extends Fragment {
             Navigation.findNavController(view)
                     .navigate(R.id.action_auth_to_home);
         });
+
+        binding.btnVerActividades.setOnClickListener(v -> {
+            Navigation.findNavController(view)
+                    .navigate(R.id.action_home_to_actividades);
+        });
     }
 
     @Override
