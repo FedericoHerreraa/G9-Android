@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
@@ -28,6 +29,10 @@
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_misReservasFragment"
+            app:destination="@id/misReservasFragment" />
     </fragment>
 
     <fragment
@@ -36,7 +41,27 @@
         android:label="Perfil"
         tools:layout="@layout/fragment_profile" />
 
-    app:startDestination="@id/auth_nav_graph">
-    <include app:graph="@navigation/auth_nav_graph" />
-    <include app:graph="@navigation/home_nav_graph" />
+    <fragment
+        android:id="@+id/misReservasFragment"
+        android:name="com.example.desarrollo_apps_1.ui.reservas.MisReservasFragment"
+        android:label="Mis Reservas"
+        tools:layout="@layout/fragment_mis_reservas">
+
+        <action
+            android:id="@+id/action_misReservas_to_crearReserva"
+            app:destination="@id/crearReservaFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/crearReservaFragment"
+        android:name="com.example.desarrollo_apps_1.ui.reservas.CrearReservaFragment"
+        android:label="Crear Reserva"
+        tools:layout="@layout/fragment_crear_reserva">
+
+        <argument
+            android:name="actividadId"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
 </navigation>

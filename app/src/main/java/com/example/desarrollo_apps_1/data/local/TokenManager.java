@@ -3,6 +3,9 @@ package com.example.desarrollo_apps_1.data.local;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -17,7 +20,22 @@ public class TokenManager {
 
     @Inject
     public TokenManager(Context context) {
-        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sp;
+        try {
+            MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
+            sp = EncryptedSharedPreferences.create(
+                    context,
+                    PREF_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (Exception e) {
+            sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        }
+        prefs = sp;
     }
 
     public void saveToken(String token) {
