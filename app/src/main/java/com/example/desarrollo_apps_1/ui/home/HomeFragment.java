@@ -41,6 +41,10 @@ public class HomeFragment extends Fragment {
 
         binding.tvEmail.setText(tokenManager.getEmail());
 
+        binding.btnProfile.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_profileFragment));
+
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
             Navigation.findNavController(view)

@@ -5,6 +5,8 @@ import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
+import com.example.desarrollo_apps_1.data.model.ProfileResponse;
+import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -29,6 +32,11 @@ public interface ApiService {
     @GET("auth/me")
     Call<UserResponse> getCurrentUser();
 
+    @GET("profile/me")
+    Call<ProfileResponse> getProfile();
+
+    @PUT("profile/me")
+    Call<ProfileResponse> updateProfile(@Body UpdateProfileRequest body);
     @GET("actividades")
     Call<ActividadListResponse> getActividades(
             @Query("limit") int limit,
