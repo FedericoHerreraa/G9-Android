@@ -37,6 +37,10 @@
         <action
             android:id="@+id/action_homeFragment_to_actividadListFragment"
             app:destination="@id/actividadListFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_historialFragment"
+            app:destination="@id/historialFragment" />
     </fragment>
 
     <fragment
@@ -77,6 +81,16 @@
         <argument
             android:name="actividadId"
             app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historialFragment"
+        android:name="com.example.desarrollo_apps_1.ui.historial.HistorialFragment"
+        android:label="Historial"
+        tools:layout="@layout/fragment_historial">
+        <action
+            android:id="@+id/action_historial_to_detail"
+            app:destination="@id/actividadDetailFragment" />
     </fragment>
 
     <include app:graph="@navigation/auth_nav_graph" />

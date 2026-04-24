@@ -3,6 +3,7 @@ package com.example.desarrollo_apps_1.data.network;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
+import com.example.desarrollo_apps_1.data.model.HistorialItem;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.model.ProfileResponse;
@@ -59,4 +60,11 @@ public interface ApiService {
 
     @POST("usuarios/historial/review")
     Call<Void> postReview(@Body ReviewRequest review);
+
+    @GET("usuarios/historial")
+    Call<List<HistorialItem>> getHistorial(
+            @Query("fecha_inicio") String fechaInicio,
+            @Query("fecha_fin") String fechaFin,
+            @Query("destino") String destino
+    );
 }

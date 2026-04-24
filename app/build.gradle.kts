@@ -61,6 +61,17 @@ dependencies {
     // Glide
     implementation(libs.glide)
 
+    // Biometric
+    implementation(libs.biometric)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
+
+    // RxJava
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
+
     // Others
     implementation(libs.security.crypto)
 
