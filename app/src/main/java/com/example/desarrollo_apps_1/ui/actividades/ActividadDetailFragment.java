@@ -66,6 +66,7 @@ public class ActividadDetailFragment extends Fragment {
         TextView tvPrecio = view.findViewById(R.id.tvPrecio);
         TextView tvCupos = view.findViewById(R.id.tvCupos);
         TextView tvPolitica = view.findViewById(R.id.tvPolitica);
+        Button btnReservar = view.findViewById(R.id.btnReservar);
         Button btnCalificar = view.findViewById(R.id.btnCalificar);
 
         progressBar.setVisibility(View.VISIBLE);
@@ -110,6 +111,13 @@ public class ActividadDetailFragment extends Fragment {
                     tvCupos.setVisibility(View.VISIBLE);
                     tvPolitica.setVisibility(View.VISIBLE);
                     
+                    btnReservar.setVisibility(View.VISIBLE);
+                    btnReservar.setOnClickListener(v -> {
+                        Bundle args = new Bundle();
+                        args.putString("actividadId", String.valueOf(actividadId));
+                        Navigation.findNavController(v).navigate(R.id.action_detail_to_crearReserva, args);
+                    });
+
                     // TODO: Implementar lógica de 48hs cuando el modelo tenga fecha_fin
                     btnCalificar.setVisibility(View.VISIBLE);
                     btnCalificar.setOnClickListener(v -> {

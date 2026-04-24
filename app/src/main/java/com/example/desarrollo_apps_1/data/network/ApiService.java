@@ -7,6 +7,8 @@ import com.example.desarrollo_apps_1.data.model.HistorialItem;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.model.ProfileResponse;
+import com.example.desarrollo_apps_1.data.model.Reserva;
+import com.example.desarrollo_apps_1.data.model.ReservaRequest;
 import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
@@ -16,6 +18,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -58,6 +61,15 @@ public interface ApiService {
     @GET("actividades/recomendadas")
     Call<List<Actividad>> getRecomendadas(@Query("preferencias") String preferencias);
 
+    @GET("reservas")
+    Call<List<Reserva>> getMisReservas();
+
+    @POST("reservas")
+    Call<Reserva> crearReserva(@Body ReservaRequest body);
+
+    @PATCH("reservas/{id}/cancelar")
+    Call<Reserva> cancelarReserva(@Path("id") String id);
+  
     @POST("usuarios/historial/review")
     Call<Void> postReview(@Body ReviewRequest review);
 
