@@ -47,11 +47,12 @@ public class HomeFragment extends Fragment {
 
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
-            Navigation.findNavController(view)
-                    .navigate(R.id.action_homeFragment_to_loginFragment);
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         });
 
-        binding.btnVerActividades.setOnClickListener(v -> {
+        binding.btnActividades.setOnClickListener(v -> {
             Navigation.findNavController(view)
                     .navigate(R.id.action_homeFragment_to_actividadListFragment);
         });
