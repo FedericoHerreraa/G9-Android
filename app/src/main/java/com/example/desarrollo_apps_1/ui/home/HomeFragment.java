@@ -56,6 +56,10 @@ public class HomeFragment extends Fragment {
             Navigation.findNavController(view)
                     .navigate(R.id.action_homeFragment_to_actividadListFragment);
         });
+
+        binding.btnMisReservas.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_misReservasFragment));
     }
 
     @Override
