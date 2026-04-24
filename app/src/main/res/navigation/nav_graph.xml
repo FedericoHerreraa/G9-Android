@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
@@ -23,11 +24,17 @@
 
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
 
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_actividadListFragment"
+            app:destination="@id/actividadListFragment" />
     </fragment>
 
     <fragment
@@ -36,7 +43,27 @@
         android:label="Perfil"
         tools:layout="@layout/fragment_profile" />
 
-    app:startDestination="@id/auth_nav_graph">
+    <fragment
+        android:id="@+id/actividadListFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ActividadListFragment"
+        android:label="Actividades"
+        tools:layout="@layout/fragment_actividad_list">
+        <action
+            android:id="@+id/action_actividadList_to_detail"
+            app:destination="@id/actividadDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/actividadDetailFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ActividadDetailFragment"
+        android:label="Detalle"
+        tools:layout="@layout/fragment_actividad_detail">
+        <argument
+            android:name="actividadId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+
     <include app:graph="@navigation/auth_nav_graph" />
     <include app:graph="@navigation/home_nav_graph" />
 </navigation>

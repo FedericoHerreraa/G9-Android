@@ -26,9 +26,7 @@ public class LoginFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -54,8 +52,9 @@ public class LoginFragment extends Fragment {
                     binding.btnLogin.setEnabled(false);
                 } else if (state == AuthRepository.AuthState.SUCCESS) {
                     binding.progressBar.setVisibility(View.GONE);
+                    // Cambiado para usar la acción definida en nav_graph.xml
                     Navigation.findNavController(view)
-                            .navigate(R.id.action_auth_to_home);
+                            .navigate(R.id.action_loginFragment_to_homeFragment);
                 } else if (state == AuthRepository.AuthState.ERROR) {
                     binding.progressBar.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
