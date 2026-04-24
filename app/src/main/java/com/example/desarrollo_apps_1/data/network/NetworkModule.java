@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,7 +23,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     private static final String BASE_URL = "https://backend-apps-1.onrender.com/";
-
     @Provides
     @Singleton
     public static Context provideContext(@ApplicationContext Context context) {
@@ -45,12 +45,19 @@ public class NetworkModule {
                 .addInterceptor(chain -> {
                     Request original = chain.request();
                     String token = tokenManager.getToken();
+                    Request.Builder builder = original.newBuilder();
+
                     if (token != null) {
-                        original = original.newBuilder()
-                                .header("Authorization", "Bearer " + token)
-                                .build();
+                        builder.header("Authorization", "Bearer " + token);
                     }
-                    return chain.proceed(original);
+
+                    Response response = chain.proceed(builder.build());
+
+                    if (response.code() == 401) {
+                        tokenManager.logout();
+                    }
+
+                    return response;
                 })
                 .addInterceptor(logging)
                 .build();

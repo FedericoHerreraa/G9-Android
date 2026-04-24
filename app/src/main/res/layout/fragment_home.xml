@@ -24,7 +24,7 @@
         android:layout_marginBottom="32dp"/>
 
     <Button
-        android:id="@+id/btnVerActividades"
+        android:id="@+id/btnActividades"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ver Actividades"
@@ -44,6 +44,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cerrar Sesión"
-        android:backgroundTint="#444444"/>
+        android:backgroundTint="#888888"/>
 
 </LinearLayout>
