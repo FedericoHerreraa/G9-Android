@@ -97,6 +97,9 @@
             app:argType="integer"
             android:defaultValue="0" />
         <action
+            android:id="@+id/action_detail_to_crearReserva"
+            app:destination="@id/crearReservaFragment" />
+        <action
             android:id="@+id/action_detail_to_review"
             app:destination="@id/reviewFragment" />
     </fragment>

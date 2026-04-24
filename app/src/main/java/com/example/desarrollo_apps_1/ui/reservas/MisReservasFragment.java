@@ -4,16 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.databinding.FragmentMisReservasBinding;
 
@@ -45,8 +44,7 @@ public class MisReservasFragment extends Fragment {
         loadReservas();
 
         binding.btnNuevaReserva.setOnClickListener(v ->
-                Navigation.findNavController(view)
-                        .navigate(R.id.action_misReservas_to_crearReserva));
+                Toast.makeText(requireContext(), "Seleccioná una actividad desde el catálogo", Toast.LENGTH_SHORT).show());
     }
 
     private void loadReservas() {
