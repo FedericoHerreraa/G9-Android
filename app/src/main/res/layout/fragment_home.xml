@@ -32,6 +32,14 @@
         android:layout_marginBottom="12dp"/>
 
     <Button
+        android:id="@+id/btnHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Historial de Actividades"
+        android:backgroundTint="#FF6B35"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
         android:id="@+id/btnProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -47,9 +47,7 @@ public class HomeFragment extends Fragment {
 
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
-            if (getActivity() != null) {
-                getActivity().finish();
-            }
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
         });
 
         binding.btnActividades.setOnClickListener(v -> {
@@ -60,6 +58,10 @@ public class HomeFragment extends Fragment {
         binding.btnMisReservas.setOnClickListener(v ->
                 Navigation.findNavController(view)
                         .navigate(R.id.action_homeFragment_to_misReservasFragment));
+
+        binding.btnHistorial.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_historialFragment));
     }
 
     @Override
