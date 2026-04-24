@@ -13,7 +13,9 @@
 
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -24,15 +26,22 @@
 
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
 
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
 
+        <!-- Acciones combinadas de ambas ramas -->
         <action
             android:id="@+id/action_homeFragment_to_misReservasFragment"
             app:destination="@id/misReservasFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_actividadListFragment"
+            app:destination="@id/actividadListFragment" />
     </fragment>
 
     <fragment
@@ -41,12 +50,12 @@
         android:label="Perfil"
         tools:layout="@layout/fragment_profile" />
 
+    <!-- Fragmentos de la rama feature/reservas -->
     <fragment
         android:id="@+id/misReservasFragment"
         android:name="com.example.desarrollo_apps_1.ui.reservas.MisReservasFragment"
         android:label="Mis Reservas"
         tools:layout="@layout/fragment_mis_reservas">
-
         <action
             android:id="@+id/action_misReservas_to_crearReserva"
             app:destination="@id/crearReservaFragment" />
@@ -57,11 +66,48 @@
         android:name="com.example.desarrollo_apps_1.ui.reservas.CrearReservaFragment"
         android:label="Crear Reserva"
         tools:layout="@layout/fragment_crear_reserva">
-
         <argument
             android:name="actividadId"
             app:argType="string"
             android:defaultValue="" />
     </fragment>
+
+    <!-- Fragmentos de la rama main -->
+    <fragment
+        android:id="@+id/actividadListFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ActividadListFragment"
+        android:label="Actividades"
+        tools:layout="@layout/fragment_actividad_list">
+        <action
+            android:id="@+id/action_actividadList_to_detail"
+            app:destination="@id/actividadDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/actividadDetailFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ActividadDetailFragment"
+        android:label="Detalle"
+        tools:layout="@layout/fragment_actividad_detail">
+        <argument
+            android:name="actividadId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_detail_to_review"
+            app:destination="@id/reviewFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ReviewFragment"
+        android:label="Calificar"
+        tools:layout="@layout/fragment_review">
+        <argument
+            android:name="actividadId"
+            app:argType="integer" />
+    </fragment>
+
+    <include app:graph="@navigation/auth_nav_graph" />
+    <include app:graph="@navigation/home_nav_graph" />
 
 </navigation>

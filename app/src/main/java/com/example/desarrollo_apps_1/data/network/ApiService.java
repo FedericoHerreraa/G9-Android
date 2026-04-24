@@ -8,6 +8,7 @@ import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.model.ProfileResponse;
 import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
+import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
 
@@ -40,6 +41,7 @@ public interface ApiService {
 
     @PUT("profile/me")
     Call<ProfileResponse> updateProfile(@Body UpdateProfileRequest body);
+
     @GET("actividades")
     Call<ActividadListResponse> getActividades(
             @Query("limit") int limit,
@@ -66,4 +68,7 @@ public interface ApiService {
 
     @PATCH("reservas/{id}/cancelar")
     Call<Reserva> cancelarReserva(@Path("id") String id);
+  
+    @POST("usuarios/historial/review")
+    Call<Void> postReview(@Body ReviewRequest review);
 }

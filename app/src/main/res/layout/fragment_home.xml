@@ -24,6 +24,14 @@
         android:layout_marginBottom="32dp"/>
 
     <Button
+        android:id="@+id/btnActividades"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver Actividades"
+        android:backgroundTint="#FF6B35"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
         android:id="@+id/btnProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

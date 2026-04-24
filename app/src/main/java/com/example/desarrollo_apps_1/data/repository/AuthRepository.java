@@ -41,6 +41,7 @@ public class AuthRepository {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    android.util.Log.d("Auth response", "Token recibido: " + response.body().getToken());
                     tokenManager.saveToken(response.body().getToken());
                     tokenManager.saveEmail(response.body().getEmail());
                     result.setValue(AuthState.SUCCESS);

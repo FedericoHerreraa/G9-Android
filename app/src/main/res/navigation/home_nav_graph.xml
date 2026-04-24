@@ -34,6 +34,19 @@
             android:name="actividadId"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_detail_to_review"
+            app:destination="@id/reviewFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.desarrollo_apps_1.ui.actividades.ReviewFragment"
+        android:label="Calificar"
+        tools:layout="@layout/fragment_review">
+        <argument
+            android:name="actividadId"
+            app:argType="integer" />
     </fragment>
 
 </navigation>

@@ -1,27 +1,31 @@
 package com.example.desarrollo_apps_1;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.NavGraph;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.databinding.ActivityMainBinding;
-import com.google.android.material.snackbar.Snackbar;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private NavController navController;
+    private AppBarConfiguration appBarConfiguration;
+
+    @Inject
+    TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +37,40 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_content_main);
-        NavController navController = navHostFragment.getNavController();
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+                .findFragmentById(R.id.nav_host_fragment);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+
+            NavGraph navGraph = navController.getNavInflater().inflate(R.navigation.nav_graph);
+            if (tokenManager.isLoggedIn()) {
+                navGraph.setStartDestination(R.id.homeFragment);
+            } else {
+                navGraph.setStartDestination(R.id.loginFragment);
             }
-        });
+            navController.setGraph(navGraph);
+
+            appBarConfiguration = new AppBarConfiguration.Builder(
+                    R.id.loginFragment, R.id.homeFragment)
+                    .build();
+
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+            NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == R.id.loginFragment) {
+                    if (getSupportActionBar() != null) getSupportActionBar().hide();
+                    binding.bottomNavigation.setVisibility(View.GONE);
+                } else {
+                    if (getSupportActionBar() != null) getSupportActionBar().show();
+                    binding.bottomNavigation.setVisibility(View.VISIBLE);
+                }
+            });
+        }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }

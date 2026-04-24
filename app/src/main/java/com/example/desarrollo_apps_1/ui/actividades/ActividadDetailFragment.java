@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
@@ -64,6 +66,7 @@ public class ActividadDetailFragment extends Fragment {
         TextView tvPrecio = view.findViewById(R.id.tvPrecio);
         TextView tvCupos = view.findViewById(R.id.tvCupos);
         TextView tvPolitica = view.findViewById(R.id.tvPolitica);
+        Button btnCalificar = view.findViewById(R.id.btnCalificar);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -106,6 +109,14 @@ public class ActividadDetailFragment extends Fragment {
                     tvPrecio.setVisibility(View.VISIBLE);
                     tvCupos.setVisibility(View.VISIBLE);
                     tvPolitica.setVisibility(View.VISIBLE);
+                    
+                    // TODO: Implementar lógica de 48hs cuando el modelo tenga fecha_fin
+                    btnCalificar.setVisibility(View.VISIBLE);
+                    btnCalificar.setOnClickListener(v -> {
+                        Bundle args = new Bundle();
+                        args.putInt("actividadId", actividadId);
+                        Navigation.findNavController(v).navigate(R.id.action_detail_to_review, args);
+                    });
 
                 } else {
                     tvError.setText("Error " + response.code() + ": no se pudo cargar el detalle.");
