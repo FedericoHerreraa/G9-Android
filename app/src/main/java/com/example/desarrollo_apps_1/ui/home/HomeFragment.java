@@ -55,10 +55,13 @@ public class HomeFragment extends Fragment {
                     .navigate(R.id.action_homeFragment_to_actividadListFragment);
         });
 
-        binding.btnHistorial.setOnClickListener(v -> {
-            Navigation.findNavController(view)
-                    .navigate(R.id.action_homeFragment_to_historialFragment);
-        });
+        binding.btnMisReservas.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_misReservasFragment));
+
+        binding.btnHistorial.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_historialFragment));
     }
 
     @Override

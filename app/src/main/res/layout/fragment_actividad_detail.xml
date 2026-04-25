@@ -130,10 +130,19 @@
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/btnCalificar"
+            android:id="@+id/btnReservar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:backgroundTint="#FF6B35"
+            android:text="Reservar"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnCalificar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:backgroundTint="#FF6B35"
             android:text="Calificar Experiencia"
             android:visibility="gone" />
