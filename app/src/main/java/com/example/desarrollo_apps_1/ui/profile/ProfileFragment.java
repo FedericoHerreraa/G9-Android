@@ -99,9 +99,6 @@ public class ProfileFragment extends Fragment {
             if (editMode) requestGalleryPermission();
         });
         binding.btnChangePhoto.setOnClickListener(v -> requestGalleryPermission());
-
-        binding.btnBack.setOnClickListener(v ->
-                Navigation.findNavController(view).popBackStack());
     }
 
     private void fetchProfile() {

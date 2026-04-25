@@ -10,7 +10,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header con botón volver y título -->
+        <!-- Header con título -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -18,25 +18,14 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="←"
-                android:textSize="18sp"
-                android:minWidth="48dp"
-                android:backgroundTint="#444444"/>
-
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Mi Perfil"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#FF6B35"
-                android:gravity="center"
-                android:layout_marginEnd="48dp"/>
+                android:gravity="center"/>
         </LinearLayout>
 
         <!-- Foto de perfil -->

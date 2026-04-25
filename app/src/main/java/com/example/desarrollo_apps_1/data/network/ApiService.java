@@ -8,6 +8,7 @@ import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
 import com.example.desarrollo_apps_1.data.model.ProfileResponse;
 import com.example.desarrollo_apps_1.data.model.Reserva;
+import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
 import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
@@ -62,7 +63,7 @@ public interface ApiService {
     Call<List<Actividad>> getRecomendadas(@Query("preferencias") String preferencias);
 
     @GET("reservas")
-    Call<List<Reserva>> getMisReservas();
+    Call<ReservaListResponse> getMisReservas();
 
     @POST("reservas")
     Call<Reserva> crearReserva(@Body ReservaRequest body);
