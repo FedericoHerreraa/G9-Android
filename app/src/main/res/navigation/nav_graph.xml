@@ -34,7 +34,6 @@
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
 
-        <!-- Acciones combinadas de ambas ramas -->
         <action
             android:id="@+id/action_homeFragment_to_misReservasFragment"
             app:destination="@id/misReservasFragment" />
@@ -54,7 +53,6 @@
         android:label="Perfil"
         tools:layout="@layout/fragment_profile" />
 
-    <!-- Fragmentos de la rama feature/reservas -->
     <fragment
         android:id="@+id/misReservasFragment"
         android:name="com.example.desarrollo_apps_1.ui.reservas.MisReservasFragment"
@@ -63,6 +61,25 @@
         <action
             android:id="@+id/action_misReservas_to_crearReserva"
             app:destination="@id/crearReservaFragment" />
+        <action
+            android:id="@+id/action_misReservas_to_reservaDetail"
+            app:destination="@id/reservaDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reservaDetailFragment"
+        android:name="com.example.desarrollo_apps_1.ui.reservas.ReservaDetailFragment"
+        android:label="Detalle de Reserva"
+        tools:layout="@layout/fragment_reserva_detail">
+        <argument
+            android:name="actividadId"
+            app:argType="integer" />
+        <argument
+            android:name="fecha"
+            app:argType="string" />
+        <argument
+            android:name="horario"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -76,7 +93,6 @@
             android:defaultValue="" />
     </fragment>
 
-    <!-- Fragmentos de la rama main -->
     <fragment
         android:id="@+id/actividadListFragment"
         android:name="com.example.desarrollo_apps_1.ui.actividades.ActividadListFragment"

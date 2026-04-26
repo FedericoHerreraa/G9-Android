@@ -13,7 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.desarrollo_apps_1.data.model.Reserva;
+import com.example.desarrollo_apps_1.data.network.ApiService;
 import com.example.desarrollo_apps_1.databinding.FragmentMisReservasBinding;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -23,6 +26,9 @@ public class MisReservasFragment extends Fragment {
     private FragmentMisReservasBinding binding;
     private ReservaViewModel viewModel;
     private ReservaAdapter adapter;
+
+    @Inject
+    ApiService apiService;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,7 +42,8 @@ public class MisReservasFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(ReservaViewModel.class);
 
-        adapter = new ReservaAdapter(this::showCancelDialog);
+        // Pasamos el ApiService al adapter para que pueda cargar las imágenes
+        adapter = new ReservaAdapter(apiService, this::showCancelDialog);
         binding.recyclerViewReservas.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerViewReservas.setAdapter(adapter);
 
