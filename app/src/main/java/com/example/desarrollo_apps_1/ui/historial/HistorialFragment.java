@@ -1,7 +1,6 @@
 package com.example.desarrollo_apps_1.ui.historial;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -17,9 +16,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
@@ -38,7 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Executor;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -71,52 +66,7 @@ public class HistorialFragment extends Fragment {
         super.onViewCreated(view, saved);
         viewModel = new ViewModelProvider(this).get(HistorialViewModel.class);
         
-        checkBiometrics();
-    }
-
-    private void checkBiometrics() {
-        BiometricManager biometricManager = BiometricManager.from(requireContext());
-        int canAuthenticate = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
-
-        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
-            // Si hay biometría configurada, pedimos autenticación
-            showBiometricPrompt();
-        } else {
-            // Si no hay hardware o no hay huellas registradas, dejamos pasar (para testeo)
-            Toast.makeText(requireContext(), "Biometría no disponible o no configurada. Accediendo...", Toast.LENGTH_LONG).show();
-            setupUI();
-        }
-    }
-
-    private void showBiometricPrompt() {
-        Executor executor = ContextCompat.getMainExecutor(requireContext());
-        BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-                Toast.makeText(requireContext(), "Error de autenticación: " + errString, Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(requireView()).popBackStack();
-            }
-
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                setupUI();
-            }
-
-            @Override
-            public void onAuthenticationFailed() {
-                super.onAuthenticationFailed();
-            }
-        });
-
-        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Acceso al Historial")
-                .setSubtitle("Autentícate para ver tus actividades pasadas")
-                .setNegativeButtonText("Cancelar")
-                .build();
-
-        biometricPrompt.authenticate(promptInfo);
+        setupUI();
     }
 
     private void setupUI() {
@@ -170,23 +120,33 @@ public class HistorialFragment extends Fragment {
 
     private void setupRecyclerView() {
         adapter = new HistorialAdapter(item -> {
+            // El punto 9 pide acceder al detalle y a la calificación dejada.
+            // Si ya tiene calificación, mostramos el detalle de la calificación.
+            // Si no la tiene, navegamos al detalle de la actividad donde está el botón para calificar.
             if (item.getCalificacionActividad() != null) {
-                showReviewDialog(item.getNombreActividad(), item.getCalificacionActividad(), item.getComentario());
+                showReviewDialog(item);
             } else {
-                Bundle args = new Bundle();
-                args.putInt("actividadId", item.getId());
-                Navigation.findNavController(requireView())
-                        .navigate(R.id.action_historial_to_detail, args);
+                navigateToDetail(item.getActividadId());
             }
         });
         binding.rvHistorial.setAdapter(adapter);
     }
 
-    private void showReviewDialog(String actividad, int calificacion, String comentario) {
+    private void navigateToDetail(int actividadId) {
+        Bundle args = new Bundle();
+        args.putInt("actividadId", actividadId);
+        Navigation.findNavController(requireView())
+                .navigate(R.id.action_historial_to_detail, args);
+    }
+
+    private void showReviewDialog(HistorialEntity item) {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Tu Calificación: " + actividad)
-                .setMessage("Estrellas: " + calificacion + "\n\nComentario: " + (comentario != null ? comentario : "Sin comentario"))
+                .setTitle("Tu Calificación: " + item.getNombreActividad())
+                .setMessage("Calificación Actividad: " + item.getCalificacionActividad() + "/5\n" +
+                        "Calificación Guía: " + item.getCalificacionGuia() + "/5\n\n" +
+                        "Comentario: " + (item.getComentario() != null ? item.getComentario() : "Sin comentario"))
                 .setPositiveButton("Cerrar", null)
+                .setNeutralButton("Ver Detalle Actividad", (dialog, which) -> navigateToDetail(item.getActividadId()))
                 .show();
     }
 

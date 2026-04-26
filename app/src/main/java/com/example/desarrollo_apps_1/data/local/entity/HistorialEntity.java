@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 public class HistorialEntity {
     @PrimaryKey
     private int id;
+    private int actividadId;
     private String nombreActividad;
     private String destino;
     private String fecha;
@@ -17,8 +18,9 @@ public class HistorialEntity {
     private Integer calificacionGuia;
     private String comentario;
 
-    public HistorialEntity(int id, String nombreActividad, String destino, String fecha, String guia, String duracion, String imagen, Integer calificacionActividad, Integer calificacionGuia, String comentario) {
+    public HistorialEntity(int id, int actividadId, String nombreActividad, String destino, String fecha, String guia, String duracion, String imagen, Integer calificacionActividad, Integer calificacionGuia, String comentario) {
         this.id = id;
+        this.actividadId = actividadId;
         this.nombreActividad = nombreActividad;
         this.destino = destino;
         this.fecha = fecha;
@@ -31,6 +33,7 @@ public class HistorialEntity {
     }
 
     public int getId() { return id; }
+    public int getActividadId() { return actividadId; }
     public String getNombreActividad() { return nombreActividad; }
     public String getDestino() { return destino; }
     public String getFecha() { return fecha; }
