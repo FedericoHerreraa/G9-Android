@@ -13,20 +13,49 @@ import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.ViewHolder> {
 
     public interface OnActividadClickListener {
         void onActividadClick(int actividadId);
     }
+    public interface OnFavoritoClickListener {
+        void onFavoritoClick(int actividadId, boolean nuevoEstado);
+    }
 
     private final List<Actividad> items;
     private final OnActividadClickListener listener;
+    private final OnFavoritoClickListener favoritoListener;
+    private final Set<Integer> favoritosIds = new HashSet<>();
 
-    public ActividadAdapter(List<Actividad> items, OnActividadClickListener listener) {
+    public ActividadAdapter(List<Actividad> items,
+                            OnActividadClickListener listener,
+                            OnFavoritoClickListener favoritoListener) {
         this.items = items;
         this.listener = listener;
+        this.favoritoListener = favoritoListener;
+    }
+    public ActividadAdapter(List<Actividad> items, OnActividadClickListener listener) {
+        this(items, listener, null);
+    }
+    public void setFavoritosIds(Set<Integer> ids) {
+        favoritosIds.clear();
+        if (ids != null) favoritosIds.addAll(ids);
+        notifyDataSetChanged();
+    }
+    public void setFavorito(int actividadId, boolean esFavorito) {
+        if (esFavorito) favoritosIds.add(actividadId);
+        else favoritosIds.remove(actividadId);
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId() == actividadId) {
+                notifyItemChanged(i);
+                return;
+            }
+        }
     }
 
     @NonNull
@@ -51,6 +80,21 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
                 .into(holder.ivActividad);
 
         holder.itemView.setOnClickListener(v -> listener.onActividadClick(actividad.getId()));
+
+        boolean esFavorito = favoritosIds.contains(actividad.getId());
+        holder.ivFavorito.setImageResource(
+                esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
+        );
+
+        if (favoritoListener == null) {
+            holder.ivFavorito.setVisibility(View.GONE);
+        } else {
+            holder.ivFavorito.setVisibility(View.VISIBLE);
+            holder.ivFavorito.setOnClickListener(v -> {
+                boolean nuevoEstado = !favoritosIds.contains(actividad.getId());
+                favoritoListener.onFavoritoClick(actividad.getId(), nuevoEstado);
+            });
+        }
     }
 
     @Override
@@ -59,12 +103,13 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivActividad;
+        ImageView ivActividad, ivFavorito;
         TextView tvNombre, tvDestino, tvCategoria, tvPrecio;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivActividad = itemView.findViewById(R.id.ivActividad);
+            ivFavorito = itemView.findViewById(R.id.ivFavorito);
             tvNombre = itemView.findViewById(R.id.tvNombre);
             tvDestino = itemView.findViewById(R.id.tvDestino);
             tvCategoria = itemView.findViewById(R.id.tvCategoria);

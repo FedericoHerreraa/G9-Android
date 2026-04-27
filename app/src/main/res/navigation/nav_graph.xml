@@ -45,6 +45,10 @@
         <action
             android:id="@+id/action_homeFragment_to_historialFragment"
             app:destination="@id/historialFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_favoritosFragment"
+            app:destination="@id/favoritosFragment" />
     </fragment>
 
     <fragment
@@ -138,6 +142,19 @@
         <action
             android:id="@+id/action_historial_to_detail"
             app:destination="@id/actividadDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritosFragment"
+        android:name="com.example.desarrollo_apps_1.ui.favoritos.FavoritosFragment"
+        android:label="Mis Favoritos"
+        tools:layout="@layout/fragment_favoritos">
+        <action
+            android:id="@+id/action_favoritos_to_detail"
+            app:destination="@id/actividadDetailFragment" />
+        <action
+            android:id="@+id/action_favoritos_to_crearReserva"
+            app:destination="@id/crearReservaFragment" />
     </fragment>
 
     <include app:graph="@navigation/auth_nav_graph" />
