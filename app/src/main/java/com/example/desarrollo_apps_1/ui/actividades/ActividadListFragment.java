@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,10 +25,14 @@ import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
+import com.example.desarrollo_apps_1.data.model.Favorito;
+import com.example.desarrollo_apps_1.data.model.FavoritosResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -56,7 +61,7 @@ public class ActividadListFragment extends Fragment {
     private Button btnCargarMas;
 
     private ActividadAdapter adapter;
-    private List<Actividad> listaActividades = new ArrayList<>();
+    private final List<Actividad> listaActividades = new ArrayList<>();
     private int paginaActual = 1;
     private String destinoActual, categoriaActual, fechaActual;
     private Double precioMinActual, precioMaxActual;
@@ -85,7 +90,11 @@ public class ActividadListFragment extends Fragment {
         layoutDestacadas = view.findViewById(R.id.layoutDestacadas);
         btnCargarMas = view.findViewById(R.id.btnCargarMas);
 
-        adapter = new ActividadAdapter(listaActividades, actividadId -> navegarADetalle(actividadId));
+        adapter = new ActividadAdapter(
+                listaActividades,
+                actividadId -> navegarADetalle(actividadId),
+                this::toggleFavorito
+        );
         rvActividades.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvActividades.setAdapter(adapter);
 
@@ -100,11 +109,10 @@ public class ActividadListFragment extends Fragment {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategoria.setAdapter(spinnerAdapter);
 
-        // Cargar primera página y recomendadas
         cargarActividades(1, false);
         cargarRecomendadas();
+        cargarFavoritos();
 
-        // Botón filtrar
         view.findViewById(R.id.btnFiltrar).setOnClickListener(v -> {
             String destino = etDestino.getText().toString().trim();
             String categoria = spinnerCategoria.getSelectedItem().toString();
@@ -123,11 +131,16 @@ public class ActividadListFragment extends Fragment {
             cargarActividades(1, false);
         });
 
-        // Botón cargar más
         btnCargarMas.setOnClickListener(v -> {
             paginaActual++;
             cargarActividades(paginaActual, true);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarFavoritos();
     }
 
     private void cargarActividades(int pagina, boolean agregar) {
@@ -146,18 +159,16 @@ public class ActividadListFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             ActividadListResponse body = response.body();
 
-                            // Destacadas solo en primera página
                             if (pagina == 1 && body.getDestacadas() != null
                                     && !body.getDestacadas().isEmpty()) {
                                 ActividadAdapter destacadasAdapter = new ActividadAdapter(
                                         body.getDestacadas(),
-                                        actividadId -> navegarADetalle(actividadId)
+                                        ActividadListFragment.this::navegarADetalle
                                 );
                                 rvDestacadas.setAdapter(destacadasAdapter);
                                 layoutDestacadas.setVisibility(View.VISIBLE);
                             }
 
-                            // Agregar o reemplazar lista
                             if (agregar) {
                                 listaActividades.addAll(body.getResults());
                             } else {
@@ -167,7 +178,6 @@ public class ActividadListFragment extends Fragment {
                             adapter.notifyDataSetChanged();
                             rvActividades.setVisibility(View.VISIBLE);
 
-                            // Mostrar botón si hay más páginas
                             if (pagina < body.getTotal_pages()) {
                                 btnCargarMas.setVisibility(View.VISIBLE);
                             }
@@ -202,7 +212,7 @@ public class ActividadListFragment extends Fragment {
                                 && !response.body().isEmpty()) {
                             ActividadAdapter recomendadasAdapter = new ActividadAdapter(
                                     response.body(),
-                                    actividadId -> navegarADetalle(actividadId)
+                                    ActividadListFragment.this::navegarADetalle
                             );
                             rvDestacadas.setAdapter(recomendadasAdapter);
                             layoutDestacadas.setVisibility(View.VISIBLE);
@@ -215,7 +225,54 @@ public class ActividadListFragment extends Fragment {
                     }
                 });
     }
+    private void cargarFavoritos() {
+        apiService.getMisFavoritos().enqueue(new Callback<FavoritosResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<FavoritosResponse> call,
+                                   @NonNull Response<FavoritosResponse> response) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getFavoritos() != null) {
+                    Set<Integer> ids = new HashSet<>();
+                    for (Favorito f : response.body().getFavoritos()) {
+                        ids.add(f.getActividadId());
+                    }
+                    adapter.setFavoritosIds(ids);
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<FavoritosResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Error cargando favoritos: " + t.getMessage());
+            }
+        });
+    }
+    private void toggleFavorito(int actividadId, boolean nuevoEstado) {
+        adapter.setFavorito(actividadId, nuevoEstado);
+
+        Call<Void> call = nuevoEstado
+                ? apiService.addFavorito(actividadId)
+                : apiService.removeFavorito(actividadId);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    adapter.setFavorito(actividadId, !nuevoEstado);
+                    Toast.makeText(getContext(),
+                            "No se pudo actualizar favoritos",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                adapter.setFavorito(actividadId, !nuevoEstado);
+                Toast.makeText(getContext(),
+                        "Sin conexión: no se pudo actualizar favoritos",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void navegarADetalle(int actividadId) {
         Bundle args = new Bundle();
         args.putInt("actividadId", actividadId);
