@@ -62,7 +62,7 @@ public class FavoritosAdapter extends RecyclerView.Adapter<FavoritosAdapter.View
         holder.tvNombre.setText(actividad.getNombre());
         holder.tvDestino.setText("📍 " + actividad.getDestino());
         holder.tvPrecio.setText("$" + actividad.getPrecio());
-        holder.tvCupos.setText("Cupos disponibles: " + actividad.getCupos_disponibles());
+        holder.tvCupos.setText("Cupos disponibles: " + actividad.getCuposDisponibles());
 
         Glide.with(holder.itemView.getContext())
                 .load(actividad.getImagen())
