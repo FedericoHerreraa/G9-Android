@@ -5,7 +5,9 @@ import android.content.Context;
 import androidx.room.Room;
 
 import com.example.desarrollo_apps_1.data.local.AppDatabase;
+import com.example.desarrollo_apps_1.data.local.NetworkMonitor;
 import com.example.desarrollo_apps_1.data.local.dao.HistorialDao;
+import com.example.desarrollo_apps_1.data.local.dao.ReservaDao;
 
 import javax.inject.Singleton;
 
@@ -31,5 +33,17 @@ public class DatabaseModule {
     @Singleton
     public static HistorialDao provideHistorialDao(AppDatabase database) {
         return database.historialDao();
+    }
+
+    @Provides
+    @Singleton
+    public static ReservaDao provideReservaDao(AppDatabase database) {
+        return database.reservaDao();
+    }
+
+    @Provides
+    @Singleton
+    public static NetworkMonitor provideNetworkMonitor(@ApplicationContext Context context) {
+        return new NetworkMonitor(context);
     }
 }

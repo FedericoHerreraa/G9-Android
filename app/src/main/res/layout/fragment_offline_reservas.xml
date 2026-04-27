@@ -16,20 +16,10 @@
         android:textStyle="bold"
         android:visibility="gone"/>
 
-    <TextView
-        android:id="@+id/tvSinReservas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="No tenés reservas aún. Explorá las actividades para reservar."
-        android:textAlignment="center"
-        android:padding="16dp"
-        android:visibility="gone" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewReservas"
+        android:id="@+id/rvReservasOffline"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </LinearLayout>

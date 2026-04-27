@@ -14,7 +14,7 @@ public class Actividad {
     private String duracion;
     private String idioma;
     private double precio;
-    private int cupos_disponibles;
+    private int cuposDisponibles;
     private String politica_cancelacion;
     private String imagen;
     private boolean destacada;
@@ -31,7 +31,7 @@ public class Actividad {
     public String getDuracion() { return duracion; }
     public String getIdioma() { return idioma; }
     public double getPrecio() { return precio; }
-    public int getCupos_disponibles() { return cupos_disponibles; }
+    public int getCuposDisponibles() { return cuposDisponibles; }
     public String getPolitica_cancelacion() { return politica_cancelacion; }
     public String getImagen() { return imagen; }
     public boolean isDestacada() { return destacada; }
