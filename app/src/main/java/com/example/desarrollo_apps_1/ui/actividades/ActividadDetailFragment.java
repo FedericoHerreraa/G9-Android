@@ -94,7 +94,7 @@ public class ActividadDetailFragment extends Fragment {
                     tvDuracion.setText("Duración: " + actividad.getDuracion());
                     tvIdioma.setText("Idioma: " + actividad.getIdioma());
                     tvPrecio.setText("Precio: $" + actividad.getPrecio());
-                    tvCupos.setText("Cupos disponibles: " + actividad.getCupos_disponibles());
+                    tvCupos.setText("Cupos disponibles: " + actividad.getCuposDisponibles());
                     tvPolitica.setText("Política de cancelación: " + actividad.getPolitica_cancelacion());
 
                     ivActividad.setVisibility(View.VISIBLE);

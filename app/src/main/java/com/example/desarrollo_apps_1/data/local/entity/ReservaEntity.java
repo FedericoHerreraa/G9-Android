@@ -1,77 +1,58 @@
-package com.example.desarrollo_apps_1.data.model;
+package com.example.desarrollo_apps_1.data.local.entity;
 
-import com.google.gson.annotations.SerializedName;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
 
-public class Reserva {
+@Entity(tableName = "reservas_local")
+public class ReservaEntity {
 
-    @SerializedName("id")
+    @PrimaryKey
+    @NonNull
     private String id;
-
-    @SerializedName("actividadId")
     private String actividadId;
-
-    @SerializedName("actividadNombre")
     private String actividadNombre;
-
-    @SerializedName("destino")
     private String destino;
-
-    @SerializedName("puntoEncuentro")
     private String puntoEncuentro;
-
-    @SerializedName("imagen")
-    private String imagen;
-
-    @SerializedName("fecha")
     private String fecha;
-
-    @SerializedName("horario")
     private String horario;
-
-    @SerializedName("cantidadParticipantes")
     private int cantidadParticipantes;
-
-    @SerializedName("estado")
     private String estado;
-
-    @SerializedName("userId")
-    private String userId;
-
-    @SerializedName("politicaCancelacion")
     private String politicaCancelacion;
+    private String imagen;
+    private long creadoEn;
 
-    @SerializedName("cuposDisponibles")
-    private int cuposDisponibles;
-
-    public Reserva() {}
-
-    public Reserva(String id, String actividadId, String actividadNombre, String destino,
-                   String puntoEncuentro, String imagen, String fecha, String horario,
-                   int cantidadParticipantes, String estado, String politicaCancelacion) {
+    public ReservaEntity(@NonNull String id, String actividadId, String actividadNombre,
+                         String destino, String puntoEncuentro, String fecha, String horario,
+                         int cantidadParticipantes, String estado, String politicaCancelacion,
+                         String imagen, long creadoEn) {
         this.id = id;
         this.actividadId = actividadId;
         this.actividadNombre = actividadNombre;
         this.destino = destino;
         this.puntoEncuentro = puntoEncuentro;
-        this.imagen = imagen;
         this.fecha = fecha;
         this.horario = horario;
         this.cantidadParticipantes = cantidadParticipantes;
         this.estado = estado;
         this.politicaCancelacion = politicaCancelacion;
+        this.imagen = imagen;
+        this.creadoEn = creadoEn;
     }
 
-    public String getId() { return id; }
+    @NonNull public String getId() { return id; }
     public String getActividadId() { return actividadId; }
     public String getActividadNombre() { return actividadNombre; }
     public String getDestino() { return destino; }
     public String getPuntoEncuentro() { return puntoEncuentro; }
-    public String getImagen() { return imagen; }
     public String getFecha() { return fecha; }
     public String getHorario() { return horario; }
     public int getCantidadParticipantes() { return cantidadParticipantes; }
     public String getEstado() { return estado; }
-    public String getUserId() { return userId; }
     public String getPoliticaCancelacion() { return politicaCancelacion; }
-    public int getCuposDisponibles() { return cuposDisponibles; }
+    public String getImagen() { return imagen; }
+    public long getCreadoEn() { return creadoEn; }
+
+    public void setId(@NonNull String id) { this.id = id; }
+    public void setEstado(String estado) { this.estado = estado; }
 }
