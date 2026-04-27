@@ -2,6 +2,7 @@ package com.example.desarrollo_apps_1;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -66,6 +67,25 @@ public class MainActivity extends AppCompatActivity {
                     binding.bottomNavigation.setVisibility(View.VISIBLE);
                 }
             });
+
+            observeSessionStatus();
+        }
+    }
+
+    private void observeSessionStatus() {
+        tokenManager.getSessionExpired().observe(this, expired -> {
+            if (expired != null && expired) {
+                tokenManager.resetSessionExpired();
+                navigateToLogin();
+            }
+        });
+    }
+
+    private void navigateToLogin() {
+        if (navController != null && navController.getCurrentDestination() != null 
+                && navController.getCurrentDestination().getId() != R.id.loginFragment) {
+            Toast.makeText(this, "Sesión expirada. Por favor, ingrese de nuevo.", Toast.LENGTH_LONG).show();
+            navController.navigate(R.id.loginFragment);
         }
     }
 
