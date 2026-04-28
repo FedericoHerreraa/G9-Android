@@ -1,6 +1,7 @@
 package com.example.desarrollo_apps_1.ui.noticias;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -11,9 +12,15 @@ import com.example.desarrollo_apps_1.data.model.Noticia;
 import com.example.desarrollo_apps_1.databinding.ItemNoticiaBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NoticiaAdapter extends RecyclerView.Adapter<NoticiaAdapter.ViewHolder> {
+
+    private static final Set<String> CATEGORIAS_SIN_FECHA = new HashSet<>(
+            Arrays.asList("descuento", "promoción", "nuevo destino"));
 
     private List<Noticia> items = new ArrayList<>();
     private final OnItemClickListener listener;
@@ -60,6 +67,19 @@ public class NoticiaAdapter extends RecyclerView.Adapter<NoticiaAdapter.ViewHold
         public void bind(Noticia noticia) {
             binding.tvTitulo.setText(noticia.getTitulo());
             binding.tvDescripcion.setText(noticia.getDescripcion());
+
+            String categoria = noticia.getCategoria();
+            if (categoria != null && CATEGORIAS_SIN_FECHA.contains(categoria.toLowerCase())) {
+                binding.tvFecha.setVisibility(View.GONE);
+            } else {
+                String fecha = noticia.getFechaPublicacion();
+                if (fecha != null && !fecha.isEmpty()) {
+                    binding.tvFecha.setText(fecha);
+                    binding.tvFecha.setVisibility(View.VISIBLE);
+                } else {
+                    binding.tvFecha.setVisibility(View.GONE);
+                }
+            }
 
             Glide.with(binding.ivNoticia.getContext())
                     .load(noticia.getImagen())
