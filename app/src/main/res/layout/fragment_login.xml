@@ -38,8 +38,17 @@
         android:layout_height="wrap_content"
         android:hint="Contraseña"
         android:inputType="textPassword"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:padding="12dp"/>
+
+    <CheckBox
+        android:id="@+id/cbBiometrics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Habilitar login biométrico"
+        android:layout_gravity="start"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnLogin"

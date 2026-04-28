@@ -2,6 +2,8 @@ package com.example.desarrollo_apps_1.data.local;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 import java.io.IOException;
@@ -16,8 +18,10 @@ public class TokenManager {
     private static final String PREF_NAME = "xplorenow_secure_prefs";
     private static final String KEY_TOKEN = "token";
     private static final String KEY_USER_EMAIL = "user_email";
+    private static final String KEY_BIOMETRIC_ENABLED = "biometria_habilitada";
 
     private SharedPreferences prefs;
+    private final MutableLiveData<Boolean> _isSessionExpired = new MutableLiveData<>(false);
 
     @Inject
     public TokenManager(@ApplicationContext Context context) {
@@ -40,6 +44,7 @@ public class TokenManager {
     }
 
     public void saveToken(String token) {
+        _isSessionExpired.setValue(false);
         prefs.edit().putString(KEY_TOKEN, token).apply();
     }
 
@@ -61,6 +66,23 @@ public class TokenManager {
 
     public void logout() {
         prefs.edit().clear().apply();
+        _isSessionExpired.postValue(true);
+    }
+
+    public LiveData<Boolean> getSessionExpired() {
+        return _isSessionExpired;
+    }
+
+    public void resetSessionExpired() {
+        _isSessionExpired.setValue(false);
+    }
+
+    public void setBiometricEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_BIOMETRIC_ENABLED, enabled).apply();
+    }
+
+    public boolean isBiometricEnabled() {
+        return prefs.getBoolean(KEY_BIOMETRIC_ENABLED, false);
     }
 
     public void savePreferencias(String preferencias) {
