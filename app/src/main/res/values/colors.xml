@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FFFF0000</color>
+
+    <!-- XploreNow Palette: Deep Blue & Orange -->
+    <color name="primary">#004E64</color>
+    <color name="primary_dark">#003544</color>
+    <color name="accent">#FF6B35</color>
+    <color name="accent_light">#FFF0EA</color>
+    <color name="text_primary">#2D3436</color>
+    <color name="text_secondary">#636E72</color>
+    <color name="background_light">#F7F9FB</color>
 </resources>

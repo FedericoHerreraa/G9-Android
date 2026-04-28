@@ -8,8 +8,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:titleTextColor="@android:color/white"
+        android:background="@color/primary"
+        app:titleCentered="true"
+        app:navigationIconTint="@color/white"
+        app:titleTextColor="@color/white"
+        app:titleTextAppearance="@style/TextAppearance.App.Toolbar.Title"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
