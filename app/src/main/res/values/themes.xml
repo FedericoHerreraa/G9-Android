@@ -1,9 +1,58 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Desarrolloapps1" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.Desarrolloapps1" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Main design colors. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/accent_light</item>
+        <item name="colorOnSecondaryContainer">@color/primary</item>
+
+        <!-- Background and surfaces -->
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColor">@color/text_primary</item>
+
+        <!-- Toolbar Style -->
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+        <!-- Esto asegura que NavigationUI use flechas blancas -->
+        <item name="drawerArrowStyle">@style/Widget.App.DrawerArrow</item>
+
+        <!-- Bottom Navigation Style -->
+        <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
     </style>
 
     <style name="Theme.Desarrolloapps1" parent="Base.Theme.Desarrolloapps1" />
+
+    <!-- Estilo de la Flecha de Navegación -->
+    <style name="Widget.App.DrawerArrow" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/white</item>
+        <item name="spinBars">true</item>
+        <item name="arrowShaftLength">18dp</item>
+        <item name="arrowHeadLength">8dp</item>
+    </style>
+
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="titleTextColor">@color/white</item>
+        <item name="titleTextAppearance">@style/TextAppearance.App.Toolbar.Title</item>
+        <item name="android:background">@color/primary</item>
+        <!-- Forzamos controles blancos (flecha, menú) -->
+        <item name="android:theme">@style/ThemeOverlay.Material3.Dark.ActionBar</item>
+    </style>
+
+    <style name="TextAppearance.App.Toolbar.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/bottom_nav_colors</item>
+        <item name="itemTextColor">@color/bottom_nav_colors</item>
+        <item name="backgroundTint">@color/white</item>
+    </style>
 </resources>

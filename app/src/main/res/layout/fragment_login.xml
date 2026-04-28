@@ -1,69 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="32dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@color/background_light">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher_round"
+        android:layout_marginBottom="16dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="XploreNow"
-        android:textSize="32sp"
+        android:textSize="36sp"
         android:textStyle="bold"
-        android:textColor="#FF6B35"
-        android:layout_marginBottom="8dp"/>
+        android:textColor="@color/primary"
+        android:layout_marginBottom="4dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Descubrí el mundo"
-        android:textSize="16sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="40dp"/>
+        android:textSize="18sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="48dp"/>
 
-    <EditText
-        android:id="@+id/etEmail"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:inputType="textEmailAddress"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_marginBottom="16dp"
-        android:padding="12dp"/>
+        app:startIconDrawable="@android:drawable/ic_dialog_email">
 
-    <EditText
-        android:id="@+id/etPassword"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp"
-        android:padding="12dp"/>
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_marginBottom="24dp"
+        app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+        app:passwordToggleEnabled="true">
 
-    <CheckBox
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cbBiometrics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Habilitar login biométrico"
         android:layout_gravity="start"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:visibility="gone" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Iniciar Sesión"
-        android:backgroundTint="#FF6B35"
-        android:layout_marginBottom="12dp"/>
+        app:cornerRadius="12dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSendOtp"
+        style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Ingresar con OTP"
-        android:backgroundTint="#444444"
+        app:cornerRadius="12dp"
+        android:textSize="16sp"
         android:layout_marginBottom="12dp"/>
 
     <ProgressBar
@@ -71,6 +95,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:indeterminateTint="@color/primary"/>
 
 </LinearLayout>
