@@ -66,6 +66,10 @@ public class HomeFragment extends Fragment {
         binding.btnFavoritos.setOnClickListener(v ->
                 Navigation.findNavController(view)
                         .navigate(R.id.action_homeFragment_to_favoritosFragment));
+
+        binding.btnNoticias.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_homeFragment_to_noticiasFragment));
     }
 
     @Override

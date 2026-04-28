@@ -1,6 +1,7 @@
 package com.example.desarrollo_apps_1.data.network;
 
 import com.example.desarrollo_apps_1.data.model.Actividad;
+import com.example.desarrollo_apps_1.data.model.Noticia;
 import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
 import com.example.desarrollo_apps_1.data.model.CheckFavoritoResponse;
@@ -94,4 +95,7 @@ public interface ApiService {
 
     @GET("favoritos/{actividadId}/check")
     Call<CheckFavoritoResponse> checkFavorito(@Path("actividadId") int actividadId);
+
+    @GET("noticias")
+    Call<List<Noticia>> getNoticias();
 }

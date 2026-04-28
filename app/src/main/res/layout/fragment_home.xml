@@ -64,6 +64,14 @@
         android:layout_marginBottom="12dp"/>
 
     <Button
+        android:id="@+id/btnNoticias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Noticias"
+        android:backgroundTint="#FF6B35"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
