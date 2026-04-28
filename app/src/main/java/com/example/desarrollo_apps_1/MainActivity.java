@@ -44,11 +44,8 @@ public class MainActivity extends AppCompatActivity {
             navController = navHostFragment.getNavController();
 
             NavGraph navGraph = navController.getNavInflater().inflate(R.navigation.nav_graph);
-            if (tokenManager.isLoggedIn()) {
-                navGraph.setStartDestination(R.id.homeFragment);
-            } else {
-                navGraph.setStartDestination(R.id.loginFragment);
-            }
+            // Siempre empezamos en LoginFragment para que maneje la biometría o el autologin
+            navGraph.setStartDestination(R.id.loginFragment);
             navController.setGraph(navGraph);
 
             appBarConfiguration = new AppBarConfiguration.Builder(
