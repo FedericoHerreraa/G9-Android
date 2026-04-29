@@ -1,7 +1,6 @@
 package com.example.desarrollo_apps_1.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.example.desarrollo_apps_1.data.local.NetworkMonitor;
 import com.example.desarrollo_apps_1.data.local.dao.ReservaDao;
@@ -9,6 +8,7 @@ import com.example.desarrollo_apps_1.data.local.entity.ReservaEntity;
 import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
+import com.example.desarrollo_apps_1.data.model.ReservaResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
 
 import java.util.ArrayList;
@@ -26,6 +26,10 @@ import retrofit2.Response;
 @Singleton
 public class ReservaRepository {
 
+    public interface RepositoryCallback<T> {
+        void onResult(T result);
+    }
+
     private final ApiService apiService;
     private final ReservaDao reservaDao;
     private final NetworkMonitor networkMonitor;
@@ -38,84 +42,70 @@ public class ReservaRepository {
         this.networkMonitor = networkMonitor;
     }
 
-    public LiveData<List<Reserva>> getMisReservas() {
-        MutableLiveData<List<Reserva>> liveData = new MutableLiveData<>();
+    public void getMisReservas(RepositoryCallback<List<Reserva>> callback) {
         apiService.getMisReservas().enqueue(new Callback<ReservaListResponse>() {
             @Override
             public void onResponse(Call<ReservaListResponse> call, Response<ReservaListResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Reserva> reservas = response.body().getReservas();
-                    liveData.postValue(reservas);
-                    // Guardar localmente
+                    callback.onResult(reservas);
                     guardarReservasLocalmente(reservas);
                 } else {
-                    liveData.postValue(null);
+                    callback.onResult(null);
                 }
             }
 
             @Override
             public void onFailure(Call<ReservaListResponse> call, Throwable t) {
-                liveData.postValue(null);
+                callback.onResult(null);
             }
         });
-        return liveData;
     }
 
-    public LiveData<Reserva> crearReserva(ReservaRequest request) {
-        MutableLiveData<Reserva> liveData = new MutableLiveData<>();
-        apiService.crearReserva(request).enqueue(new Callback<Reserva>() {
+    public void crearReserva(ReservaRequest request, RepositoryCallback<Reserva> callback) {
+        apiService.crearReserva(request).enqueue(new Callback<ReservaResponse>() {
             @Override
-            public void onResponse(Call<Reserva> call, Response<Reserva> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Reserva reserva = response.body();
-                    liveData.postValue(reserva);
-                    // Guardar localmente al confirmar
+            public void onResponse(Call<ReservaResponse> call, Response<ReservaResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getReserva() != null) {
+                    Reserva reserva = response.body().getReserva();
+                    callback.onResult(reserva);
                     guardarReservaLocalmente(reserva);
                 } else {
-                    liveData.postValue(null);
+                    callback.onResult(null);
                 }
             }
 
             @Override
-            public void onFailure(Call<Reserva> call, Throwable t) {
-                liveData.postValue(null);
+            public void onFailure(Call<ReservaResponse> call, Throwable t) {
+                callback.onResult(null);
             }
         });
-        return liveData;
     }
 
-    public LiveData<Reserva> cancelarReserva(String id) {
-        MutableLiveData<Reserva> liveData = new MutableLiveData<>();
+    public void cancelarReserva(String id, RepositoryCallback<Reserva> callback) {
         apiService.cancelarReserva(id).enqueue(new Callback<Reserva>() {
             @Override
             public void onResponse(Call<Reserva> call, Response<Reserva> response) {
                 if (response.isSuccessful()) {
-                    liveData.postValue(response.body());
-                    // Actualizar estado local
+                    callback.onResult(response.body());
                     executor.execute(() -> reservaDao.updateEstado(id, "cancelada"));
                 } else {
-                    liveData.postValue(null);
+                    callback.onResult(null);
                 }
             }
 
             @Override
             public void onFailure(Call<Reserva> call, Throwable t) {
-                liveData.postValue(null);
+                callback.onResult(null);
             }
         });
-        return liveData;
-    }
-
-    public LiveData<List<ReservaEntity>> getReservasOffline() {
-        return reservaDao.getReservasConfirmadas();
-    }
-
-    public void sincronizarReservas() {
-        if (!networkMonitor.isCurrentlyConnected()) return;
-        getMisReservas();
     }
 
     private void guardarReservaLocalmente(Reserva reserva) {
+        if (reserva == null || reserva.getId() == null) {
+            Log.e("ReservaRepository", "No se puede guardar una reserva nula o sin ID");
+            return;
+        }
         executor.execute(() -> {
             ReservaEntity entity = new ReservaEntity(
                     reserva.getId(),
@@ -136,9 +126,11 @@ public class ReservaRepository {
     }
 
     private void guardarReservasLocalmente(List<Reserva> reservas) {
+        if (reservas == null) return;
         executor.execute(() -> {
             List<ReservaEntity> entities = new ArrayList<>();
             for (Reserva reserva : reservas) {
+                if (reserva.getId() == null) continue;
                 entities.add(new ReservaEntity(
                         reserva.getId(),
                         reserva.getActividadId(),

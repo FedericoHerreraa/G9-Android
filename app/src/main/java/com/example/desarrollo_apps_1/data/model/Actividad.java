@@ -1,23 +1,55 @@
 package com.example.desarrollo_apps_1.data.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Actividad {
+    @SerializedName("id")
     private int id;
+    
+    @SerializedName("nombre")
     private String nombre;
+    
+    @SerializedName("destino")
     private String destino;
+    
+    @SerializedName("categoria")
     private String categoria;
+    
+    @SerializedName("descripcion")
     private String descripcion;
+    
+    @SerializedName("que_incluye")
     private String que_incluye;
+    
+    @SerializedName("punto_encuentro")
     private String punto_encuentro;
+    
+    @SerializedName("guia")
     private String guia;
+    
+    @SerializedName("duracion")
     private String duracion;
+    
+    @SerializedName("idioma")
     private String idioma;
+    
+    @SerializedName("precio")
     private double precio;
+    
+    @SerializedName("cupos_disponibles")
     private int cuposDisponibles;
+    
+    @SerializedName("politica_cancelacion")
     private String politica_cancelacion;
+    
+    @SerializedName("imagen")
     private String imagen;
+    
+    @SerializedName("destacada")
     private boolean destacada;
+    
+    @SerializedName("fotos")
     private List<String> fotos;
 
     public int getId() { return id; }

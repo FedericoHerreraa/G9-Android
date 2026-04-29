@@ -1,6 +1,7 @@
 package com.example.desarrollo_apps_1.ui.auth;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.desarrollo_apps_1.data.repository.AuthRepository;
@@ -14,25 +15,29 @@ public class AuthViewModel extends ViewModel {
 
     private final AuthRepository authRepository;
 
+    private final MutableLiveData<AuthRepository.AuthState> _authState = new MutableLiveData<>(AuthRepository.AuthState.IDLE);
+    public LiveData<AuthRepository.AuthState> getAuthState() {
+        return _authState;
+    }
+
     @Inject
     public AuthViewModel(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
-    public LiveData<AuthRepository.AuthState> login(String email, String password) {
-        return authRepository.login(email, password);
+    public void login(String email, String password) {
+        _authState.setValue(AuthRepository.AuthState.LOADING);
+        authRepository.login(email, password, _authState::setValue);
     }
 
-    public LiveData<AuthRepository.AuthState> sendOtp(String email) {
-        return authRepository.sendOtp(email);
+    public void sendOtp(String email) {
+        _authState.setValue(AuthRepository.AuthState.LOADING);
+        authRepository.sendOtp(email, _authState::setValue);
     }
 
-    public LiveData<AuthRepository.AuthState> verifyOtp(String email, String otp) {
-        return authRepository.verifyOtp(email, otp);
-    }
-
-    public LiveData<AuthRepository.AuthState> resendOtp(String email) {
-        return authRepository.sendOtp(email);
+    public void verifyOtp(String email, String otp) {
+        _authState.setValue(AuthRepository.AuthState.LOADING);
+        authRepository.verifyOtp(email, otp, _authState::setValue);
     }
 
     public void logout() {

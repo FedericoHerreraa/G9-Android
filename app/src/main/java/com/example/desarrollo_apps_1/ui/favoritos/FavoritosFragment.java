@@ -5,9 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,12 +12,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.model.Favorito;
 import com.example.desarrollo_apps_1.data.model.FavoritosResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
+import com.example.desarrollo_apps_1.databinding.FragmentFavoritosBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +38,7 @@ public class FavoritosFragment extends Fragment
     @Inject
     ApiService apiService;
 
-    private RecyclerView rvFavoritos;
-    private ProgressBar progressBar;
-    private LinearLayout layoutVacio;
-    private TextView tvError;
-
+    private FragmentFavoritosBinding binding;
     private FavoritosAdapter adapter;
     private final List<Favorito> items = new ArrayList<>();
 
@@ -54,23 +47,25 @@ public class FavoritosFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_favoritos, container, false);
+        binding = FragmentFavoritosBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvFavoritos = view.findViewById(R.id.rvFavoritos);
-        progressBar = view.findViewById(R.id.progressBar);
-        layoutVacio = view.findViewById(R.id.layoutVacio);
-        tvError = view.findViewById(R.id.tvError);
-
         adapter = new FavoritosAdapter(items, this);
-        rvFavoritos.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvFavoritos.setAdapter(adapter);
+        binding.rvFavoritos.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvFavoritos.setAdapter(adapter);
 
         cargarFavoritos();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
@@ -80,15 +75,17 @@ public class FavoritosFragment extends Fragment
     }
 
     private void cargarFavoritos() {
-        progressBar.setVisibility(View.VISIBLE);
-        tvError.setVisibility(View.GONE);
-        layoutVacio.setVisibility(View.GONE);
+        if (binding == null) return;
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.tvError.setVisibility(View.GONE);
+        binding.layoutVacio.setVisibility(View.GONE);
 
         apiService.getMisFavoritos().enqueue(new Callback<FavoritosResponse>() {
             @Override
             public void onResponse(@NonNull Call<FavoritosResponse> call,
                                    @NonNull Response<FavoritosResponse> response) {
-                progressBar.setVisibility(View.GONE);
+                if (binding == null) return;
+                binding.progressBar.setVisibility(View.GONE);
 
                 if (response.isSuccessful() && response.body() != null) {
                     List<Favorito> favoritos = response.body().getFavoritos();
@@ -97,28 +94,30 @@ public class FavoritosFragment extends Fragment
                     adapter.notifyDataSetChanged();
 
                     if (items.isEmpty()) {
-                        layoutVacio.setVisibility(View.VISIBLE);
-                        rvFavoritos.setVisibility(View.GONE);
+                        binding.layoutVacio.setVisibility(View.VISIBLE);
+                        binding.rvFavoritos.setVisibility(View.GONE);
                     } else {
-                        layoutVacio.setVisibility(View.GONE);
-                        rvFavoritos.setVisibility(View.VISIBLE);
+                        binding.layoutVacio.setVisibility(View.GONE);
+                        binding.rvFavoritos.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    tvError.setText("Error " + response.code() + ": no se pudieron cargar los favoritos");
-                    tvError.setVisibility(View.VISIBLE);
+                    binding.tvError.setText("Error " + response.code() + ": no se pudieron cargar los favoritos");
+                    binding.tvError.setVisibility(View.VISIBLE);
                     Log.e(TAG, "Error HTTP: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<FavoritosResponse> call, @NonNull Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                tvError.setText("Error de red: " + t.getMessage());
-                tvError.setVisibility(View.VISIBLE);
+                if (binding == null) return;
+                binding.progressBar.setVisibility(View.GONE);
+                binding.tvError.setText("Error de red: " + t.getMessage());
+                binding.tvError.setVisibility(View.VISIBLE);
                 Log.e(TAG, "onFailure: " + t.getMessage());
             }
         });
     }
+
     @Override
     public void onItemClick(int actividadId) {
         Bundle args = new Bundle();
@@ -143,9 +142,9 @@ public class FavoritosFragment extends Fragment
         items.remove(indexQuitado);
         adapter.notifyItemRemoved(indexQuitado);
 
-        if (items.isEmpty()) {
-            layoutVacio.setVisibility(View.VISIBLE);
-            rvFavoritos.setVisibility(View.GONE);
+        if (items.isEmpty() && binding != null) {
+            binding.layoutVacio.setVisibility(View.VISIBLE);
+            binding.rvFavoritos.setVisibility(View.GONE);
         }
 
         final int revertIndex = indexQuitado;
@@ -157,8 +156,10 @@ public class FavoritosFragment extends Fragment
                 if (!response.isSuccessful()) {
                     items.add(revertIndex, revertItem);
                     adapter.notifyItemInserted(revertIndex);
-                    layoutVacio.setVisibility(View.GONE);
-                    rvFavoritos.setVisibility(View.VISIBLE);
+                    if (binding != null) {
+                        binding.layoutVacio.setVisibility(View.GONE);
+                        binding.rvFavoritos.setVisibility(View.VISIBLE);
+                    }
                     Toast.makeText(getContext(), "No se pudo quitar de favoritos",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -168,8 +169,10 @@ public class FavoritosFragment extends Fragment
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 items.add(revertIndex, revertItem);
                 adapter.notifyItemInserted(revertIndex);
-                layoutVacio.setVisibility(View.GONE);
-                rvFavoritos.setVisibility(View.VISIBLE);
+                if (binding != null) {
+                    binding.layoutVacio.setVisibility(View.GONE);
+                    binding.rvFavoritos.setVisibility(View.VISIBLE);
+                }
                 Toast.makeText(getContext(), "Sin conexión: no se pudo quitar de favoritos",
                         Toast.LENGTH_SHORT).show();
             }

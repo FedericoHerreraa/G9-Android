@@ -54,13 +54,14 @@ public class MisReservasFragment extends Fragment {
         binding.recyclerViewReservas.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerViewReservas.setAdapter(adapter);
 
-        loadReservas();
+        setupObservers();
+        viewModel.cargarMisReservas();
     }
 
-    private void loadReservas() {
+    private void setupObservers() {
         viewModel.getMisReservas().observe(getViewLifecycleOwner(), reservas -> {
+            if (binding == null) return;
             if (reservas == null || reservas.isEmpty()) {
-                // Falló la conexión, mostrar datos locales
                 binding.tvSinConexion.setVisibility(View.VISIBLE);
                 loadReservasOffline();
             } else {
@@ -70,10 +71,18 @@ public class MisReservasFragment extends Fragment {
                 binding.recyclerViewReservas.setVisibility(View.VISIBLE);
             }
         });
+
+        viewModel.getReservaCancelada().observe(getViewLifecycleOwner(), result -> {
+            if (result != null) {
+                viewModel.cargarMisReservas();
+                viewModel.resetReservaStatus();
+            }
+        });
     }
 
     private void loadReservasOffline() {
         reservaDao.getReservasConfirmadas().observe(getViewLifecycleOwner(), reservasLocales -> {
+            if (binding == null) return;
             if (reservasLocales == null || reservasLocales.isEmpty()) {
                 binding.tvSinReservas.setVisibility(View.VISIBLE);
                 binding.recyclerViewReservas.setVisibility(View.GONE);
@@ -112,8 +121,7 @@ public class MisReservasFragment extends Fragment {
                 .setTitle("Cancelar Reserva")
                 .setMessage(mensaje)
                 .setPositiveButton("Confirmar", (dialog, which) ->
-                        viewModel.cancelarReserva(reserva.getId())
-                                .observe(getViewLifecycleOwner(), result -> loadReservas()))
+                        viewModel.cancelarReserva(reserva.getId()))
                 .setNegativeButton("Cancelar", null)
                 .show();
     }

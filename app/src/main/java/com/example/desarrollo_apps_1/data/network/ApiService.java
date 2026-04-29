@@ -13,6 +13,7 @@ import com.example.desarrollo_apps_1.data.model.ProfileResponse;
 import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
+import com.example.desarrollo_apps_1.data.model.ReservaResponse;
 import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
@@ -70,7 +71,7 @@ public interface ApiService {
     Call<ReservaListResponse> getMisReservas();
 
     @POST("reservas")
-    Call<Reserva> crearReserva(@Body ReservaRequest body);
+    Call<ReservaResponse> crearReserva(@Body ReservaRequest body);
 
     @PATCH("reservas/{id}/cancelar")
     Call<Reserva> cancelarReserva(@Path("id") String id);

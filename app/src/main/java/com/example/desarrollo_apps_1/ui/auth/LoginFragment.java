@@ -3,7 +3,6 @@ package com.example.desarrollo_apps_1.ui.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,11 +54,10 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        // 1. Verificar disponibilidad de hardware biométrico para mostrar/ocultar checkbox si fuera necesario
         checkBiometricAvailability();
-
-        // 2. Verificar si tiene sesión activa y biometría habilitada para login rápido
         verificarBiometria();
+
+        setupObservers();
 
         binding.btnLogin.setOnClickListener(v -> loginClasico());
         
@@ -69,16 +67,37 @@ public class LoginFragment extends Fragment {
                  Toast.makeText(getContext(), "Ingresá tu email", Toast.LENGTH_SHORT).show();
                  return;
              }
-             authViewModel.sendOtp(email).observe(getViewLifecycleOwner(), state -> {
-                 if (state == AuthRepository.AuthState.SUCCESS) {
-                     Toast.makeText(getContext(), "OTP enviado", Toast.LENGTH_SHORT).show();
-                 }
-             });
+             authViewModel.sendOtp(email);
+        });
+    }
+
+    private void setupObservers() {
+        authViewModel.getAuthState().observe(getViewLifecycleOwner(), state -> {
+            if (state == AuthRepository.AuthState.LOADING) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.btnLogin.setEnabled(false);
+            } else if (state == AuthRepository.AuthState.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (binding.cbBiometrics.getVisibility() == View.VISIBLE) {
+                    disposables.add(settingsManager.setBiometricEnabled(binding.cbBiometrics.isChecked())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe());
+                }
+                irAHome();
+            } else if (state == AuthRepository.AuthState.ERROR) {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnLogin.setEnabled(true);
+                Toast.makeText(getContext(), "Error en la autenticación", Toast.LENGTH_SHORT).show();
+            } else {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnLogin.setEnabled(true);
+            }
         });
     }
 
     private void verificarBiometria() {
-        if (tokenManager.getToken() == null) return; // No hay sesión previa
+        if (tokenManager.getToken() == null) return;
 
         disposables.add(settingsManager.isBiometricEnabled()
                 .firstElement()
@@ -142,26 +161,7 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-        authViewModel.login(email, password).observe(getViewLifecycleOwner(), state -> {
-            if (state == AuthRepository.AuthState.LOADING) {
-                binding.progressBar.setVisibility(View.VISIBLE);
-                binding.btnLogin.setEnabled(false);
-            } else if (state == AuthRepository.AuthState.SUCCESS) {
-                binding.progressBar.setVisibility(View.GONE);
-                // Si el checkbox de biometría existe y está visible, guardamos la preferencia
-                if (binding.cbBiometrics.getVisibility() == View.VISIBLE) {
-                    disposables.add(settingsManager.setBiometricEnabled(binding.cbBiometrics.isChecked())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe());
-                }
-                irAHome();
-            } else if (state == AuthRepository.AuthState.ERROR) {
-                binding.progressBar.setVisibility(View.GONE);
-                binding.btnLogin.setEnabled(true);
-                Toast.makeText(getContext(), "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
-            }
-        });
+        authViewModel.login(email, password);
     }
 
     private void checkBiometricAvailability() {
