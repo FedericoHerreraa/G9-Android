@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
+import com.example.desarrollo_apps_1.data.repository.ProfileRepository;
 import com.example.desarrollo_apps_1.databinding.FragmentHomeBinding;
 
 import javax.inject.Inject;
@@ -22,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private HomeViewModel homeViewModel;
 
     @Inject
     TokenManager tokenManager;
@@ -38,37 +41,55 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
+        checkSessionStatus();
+        setupUI();
+    }
+
+    private void checkSessionStatus() {
+        homeViewModel.checkSession().observe(getViewLifecycleOwner(), resource -> {
+            if (resource.status == ProfileRepository.Status.ERROR) {
+                // El interceptor ya hace el logout(), MainActivity detectará el cambio y navegará al login.
+            } else if (resource.status == ProfileRepository.Status.SUCCESS) {
+                if (resource.data != null) {
+                    binding.tvEmail.setText(resource.data.getEmail());
+                }
+            }
+        });
+    }
+
+    private void setupUI() {
         binding.tvEmail.setText(tokenManager.getEmail());
 
         binding.btnProfile.setOnClickListener(v ->
-                Navigation.findNavController(view)
+                Navigation.findNavController(requireView())
                         .navigate(R.id.action_homeFragment_to_profileFragment));
 
         binding.btnLogout.setOnClickListener(v -> {
             tokenManager.logout();
-            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_loginFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
         });
 
         binding.btnActividades.setOnClickListener(v -> {
-            Navigation.findNavController(view)
+            Navigation.findNavController(requireView())
                     .navigate(R.id.action_homeFragment_to_actividadListFragment);
         });
 
         binding.btnMisReservas.setOnClickListener(v ->
-                Navigation.findNavController(view)
+                Navigation.findNavController(requireView())
                         .navigate(R.id.action_homeFragment_to_misReservasFragment));
 
         binding.btnHistorial.setOnClickListener(v ->
-                Navigation.findNavController(view)
+                Navigation.findNavController(requireView())
                         .navigate(R.id.action_homeFragment_to_historialFragment));
 
         binding.btnFavoritos.setOnClickListener(v ->
-                Navigation.findNavController(view)
+                Navigation.findNavController(requireView())
                         .navigate(R.id.action_homeFragment_to_favoritosFragment));
 
         binding.btnNoticias.setOnClickListener(v ->
-                Navigation.findNavController(view)
+                Navigation.findNavController(requireView())
                         .navigate(R.id.action_homeFragment_to_noticiasFragment));
     }
 

@@ -60,6 +60,15 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tvFecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/tvDestino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -165,6 +174,65 @@
             android:backgroundTint="#FF6B35"
             android:text="Calificar Experiencia"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layoutUserReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:padding="16dp"
+            android:background="#F5F5F5"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu Calificación"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Actividad:"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <RatingBar
+                android:id="@+id/rbUserActividad"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="1.0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guía:"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
+
+            <RatingBar
+                android:id="@+id/rbUserGuia"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="1.0" />
+
+            <TextView
+                android:id="@+id/tvUserComentario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

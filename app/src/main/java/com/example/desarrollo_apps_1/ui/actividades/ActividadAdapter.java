@@ -13,8 +13,12 @@ import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.ViewHolder> {
@@ -74,6 +78,13 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
         holder.tvDestino.setText(actividad.getDestino());
         holder.tvCategoria.setText(actividad.getCategoria());
         holder.tvPrecio.setText("$" + actividad.getPrecio());
+        
+        if (actividad.getFecha() != null) {
+            holder.tvFecha.setVisibility(View.VISIBLE);
+            holder.tvFecha.setText(formatDate(actividad.getFecha()));
+        } else {
+            holder.tvFecha.setVisibility(View.GONE);
+        }
 
         Glide.with(holder.itemView.getContext())
                 .load(actividad.getImagen())
@@ -97,6 +108,17 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
         }
     }
 
+    private String formatDate(String dateStr) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            Date date = inputFormat.parse(dateStr);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            return dateStr;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return items.size();
@@ -104,7 +126,7 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivActividad, ivFavorito;
-        TextView tvNombre, tvDestino, tvCategoria, tvPrecio;
+        TextView tvNombre, tvDestino, tvCategoria, tvPrecio, tvFecha;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -114,6 +136,7 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.View
             tvDestino = itemView.findViewById(R.id.tvDestino);
             tvCategoria = itemView.findViewById(R.id.tvCategoria);
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
+            tvFecha = itemView.findViewById(R.id.tvFecha);
         }
     }
 }

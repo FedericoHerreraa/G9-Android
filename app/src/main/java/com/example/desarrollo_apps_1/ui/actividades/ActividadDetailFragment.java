@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +21,20 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
+import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 import com.example.desarrollo_apps_1.data.model.CheckFavoritoResponse;
+import com.example.desarrollo_apps_1.data.model.ProfileResponse;
+import com.example.desarrollo_apps_1.data.model.Reserva;
+import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
+import com.example.desarrollo_apps_1.data.model.ReviewResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -35,17 +48,22 @@ public class ActividadDetailFragment extends Fragment {
 
     private static final String TAG = "ActividadDetailFragment";
 
-    @Inject
-    ApiService apiService;
+    @Inject ApiService apiService;
+    @Inject TokenManager tokenManager;
+
     private int actividadId;
     private boolean esFavorito = false;
     private ImageView ivFavorito;
+    private Button btnCalificar;
+    private String fechaActividad;
+
+    private LinearLayout layoutUserReview;
+    private RatingBar rbUserActividad, rbUserGuia;
+    private TextView tvUserComentario;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_actividad_detail, container, false);
     }
 
@@ -53,16 +71,17 @@ public class ActividadDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        actividadId = getArguments() != null
-                ? getArguments().getInt("actividadId", 0)
-                : 0;
+        actividadId = getArguments() != null ? getArguments().getInt("actividadId", 0) : 0;
+        Log.i(TAG, "Cargando Actividad ID: " + actividadId);
 
+        // UI
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
         TextView tvError = view.findViewById(R.id.tvError);
         FrameLayout imageContainer = view.findViewById(R.id.imageContainer);
         ImageView ivActividad = view.findViewById(R.id.ivActividad);
         ivFavorito = view.findViewById(R.id.ivFavorito);
         TextView tvNombre = view.findViewById(R.id.tvNombre);
+        TextView tvFecha = view.findViewById(R.id.tvFecha);
         TextView tvDestino = view.findViewById(R.id.tvDestino);
         TextView tvCategoria = view.findViewById(R.id.tvCategoria);
         TextView tvDescripcion = view.findViewById(R.id.tvDescripcion);
@@ -74,27 +93,26 @@ public class ActividadDetailFragment extends Fragment {
         TextView tvPrecio = view.findViewById(R.id.tvPrecio);
         TextView tvCupos = view.findViewById(R.id.tvCupos);
         TextView tvPolitica = view.findViewById(R.id.tvPolitica);
+        btnCalificar = view.findViewById(R.id.btnCalificar);
         Button btnReservar = view.findViewById(R.id.btnReservar);
-        Button btnCalificar = view.findViewById(R.id.btnCalificar);
+
+        layoutUserReview = view.findViewById(R.id.layoutUserReview);
+        rbUserActividad = view.findViewById(R.id.rbUserActividad);
+        rbUserGuia = view.findViewById(R.id.rbUserGuia);
+        tvUserComentario = view.findViewById(R.id.tvUserComentario);
 
         progressBar.setVisibility(View.VISIBLE);
-
-        ivFavorito.setOnClickListener(v -> toggleFavorito());
         cargarEstadoFavorito();
 
         apiService.getActividadById(actividadId).enqueue(new Callback<Actividad>() {
             @Override
-            public void onResponse(@NonNull Call<Actividad> call,
-                                   @NonNull Response<Actividad> response) {
+            public void onResponse(@NonNull Call<Actividad> call, @NonNull Response<Actividad> response) {
                 progressBar.setVisibility(View.GONE);
-
                 if (response.isSuccessful() && response.body() != null) {
                     Actividad actividad = response.body();
+                    fechaActividad = actividad.getFecha();
 
-                    Glide.with(requireContext())
-                            .load(actividad.getImagen())
-                            .into(ivActividad);
-
+                    Glide.with(requireContext()).load(actividad.getImagen()).into(ivActividad);
                     tvNombre.setText(actividad.getNombre());
                     tvDestino.setText("📍 " + actividad.getDestino());
                     tvCategoria.setText(actividad.getCategoria());
@@ -107,6 +125,11 @@ public class ActividadDetailFragment extends Fragment {
                     tvPrecio.setText("Precio: $" + actividad.getPrecio());
                     tvCupos.setText("Cupos disponibles: " + actividad.getCuposDisponibles());
                     tvPolitica.setText("Política de cancelación: " + actividad.getPolitica_cancelacion());
+
+                    if (fechaActividad != null) {
+                        tvFecha.setText("Fecha: " + formatDate(fechaActividad));
+                        tvFecha.setVisibility(View.VISIBLE);
+                    }
 
                     imageContainer.setVisibility(View.VISIBLE);
                     tvNombre.setVisibility(View.VISIBLE);
@@ -129,80 +152,152 @@ public class ActividadDetailFragment extends Fragment {
                         Navigation.findNavController(v).navigate(R.id.action_detail_to_crearReserva, args);
                     });
 
-                    btnCalificar.setVisibility(View.VISIBLE);
-                    btnCalificar.setOnClickListener(v -> {
-                        Bundle args = new Bundle();
-                        args.putInt("actividadId", actividadId);
-                        Navigation.findNavController(v).navigate(R.id.action_detail_to_review, args);
-                    });
-
+                    obtenerUidYBuscarReview();
+                    
+                    checkEligibilityForReview();
                 } else {
-                    tvError.setText("Error " + response.code() + ": no se pudo cargar el detalle.");
+                    tvError.setText("Error al cargar detalle");
                     tvError.setVisibility(View.VISIBLE);
-                    Log.e(TAG, "Error HTTP: " + response.code());
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<Actividad> call, @NonNull Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                tvError.setText("Error de red: " + t.getMessage());
                 tvError.setVisibility(View.VISIBLE);
-                Log.e(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+
+        ivFavorito.setOnClickListener(v -> toggleFavorito());
+    }
+
+    private void obtenerUidYBuscarReview() {
+        Log.d(TAG, "Llamando a GET /profile/me para obtener UID real...");
+        apiService.getProfile().enqueue(new Callback<ProfileResponse>() {
+            @Override
+            public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getUser() != null) {
+                    String uid = response.body().getUser().getUid();
+                    Log.d(TAG, "UID obtenido de perfil: " + uid);
+                    tokenManager.saveUserId(uid);
+                    executeGetReview(uid);
+                } else {
+                    Log.e(TAG, "Fallo al obtener UID del perfil: " + response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<ProfileResponse> call, Throwable t) {
+                Log.e(TAG, "Error de red al obtener perfil: " + t.getMessage());
             }
         });
     }
+
+    private void checkEligibilityForReview() {
+        apiService.getMisReservas().enqueue(new Callback<ReservaListResponse>() {
+            @Override
+            public void onResponse(Call<ReservaListResponse> call, Response<ReservaListResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    for (Reserva reserva : response.body().getReservas()) {
+                        try {
+                            String resActIdStr = reserva.getActividadId();
+                            int resActId = Integer.parseInt(resActIdStr.matches("\\d+") ? resActIdStr : "0");
+                            if (resActId == actividadId && "finalizada".equalsIgnoreCase(reserva.getEstado())) {
+                                if (isReviewPeriodOpen(fechaActividad)) {
+                                    btnCalificar.setVisibility(View.VISIBLE);
+                                    btnCalificar.setOnClickListener(v -> {
+                                        Bundle args = new Bundle();
+                                        args.putInt("actividadId", actividadId);
+                                        Navigation.findNavController(v).navigate(R.id.action_detail_to_review, args);
+                                    });
+                                }
+                                break;
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ReservaListResponse> call, Throwable t) {}
+        });
+    }
+
+    private void executeGetReview(String userId) {
+        Log.i(TAG, "PETICION REVIEW: userId=" + userId + ", actividadId=" + actividadId);
+        apiService.getReview(userId, actividadId).enqueue(new Callback<ReviewResponse>() {
+            @Override
+            public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                Log.i(TAG, "RESPUESTA REVIEW: Code=" + response.code());
+                if (response.isSuccessful() && response.body() != null && response.body().getReview() != null) {
+                    showUserReview(response.body().getReview());
+                }
+            }
+            @Override
+            public void onFailure(Call<ReviewResponse> call, Throwable t) {
+                Log.e(TAG, "ERROR RED REVIEW: " + t.getMessage());
+            }
+        });
+    }
+
+    private void showUserReview(ReviewResponse.ReviewData review) {
+        Log.i(TAG, "Mostrando reseña previa en UI");
+        layoutUserReview.setVisibility(View.VISIBLE);
+        rbUserActividad.setRating(review.getCalificacionActividad());
+        rbUserGuia.setRating(review.getCalificacionGuia());
+        tvUserComentario.setText(review.getComentario() != null && !review.getComentario().isEmpty()
+                ? "\"" + review.getComentario() + "\"" : "Sin comentario.");
+    }
+
+    private String formatDate(String dateStr) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            Date date = inputFormat.parse(dateStr);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (ParseException e) { return dateStr; }
+    }
+
+    private boolean isReviewPeriodOpen(String fechaStr) {
+        if (fechaStr == null) return false;
+        String[] formats = {"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy", "yyyy-MM-dd"};
+        Date date = null;
+        for (String format : formats) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+                date = sdf.parse(fechaStr);
+                if (date != null) break;
+            } catch (ParseException ignored) {}
+        }
+        if (date != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.HOUR, 48);
+            return new Date().after(cal.getTime());
+        }
+        return false;
+    }
+
     private void cargarEstadoFavorito() {
         apiService.checkFavorito(actividadId).enqueue(new Callback<CheckFavoritoResponse>() {
             @Override
-            public void onResponse(@NonNull Call<CheckFavoritoResponse> call,
-                                   @NonNull Response<CheckFavoritoResponse> response) {
+            public void onResponse(@NonNull Call<CheckFavoritoResponse> call, @NonNull Response<CheckFavoritoResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     esFavorito = response.body().isEsFavorito();
-                    actualizarIconoCorazon();
+                    ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
                 }
             }
-
             @Override
-            public void onFailure(@NonNull Call<CheckFavoritoResponse> call, @NonNull Throwable t) {
-                Log.e(TAG, "Error consultando favorito: " + t.getMessage());
-            }
+            public void onFailure(@NonNull Call<CheckFavoritoResponse> call, @NonNull Throwable t) {}
         });
     }
+
     private void toggleFavorito() {
-        boolean nuevoEstado = !esFavorito;
-        esFavorito = nuevoEstado;
-        actualizarIconoCorazon();
-
-        Call<Void> call = nuevoEstado
-                ? apiService.addFavorito(actividadId)
-                : apiService.removeFavorito(actividadId);
-
+        esFavorito = !esFavorito;
+        ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+        Call<Void> call = esFavorito ? apiService.addFavorito(actividadId) : apiService.removeFavorito(actividadId);
         call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (!response.isSuccessful()) {
-                    esFavorito = !nuevoEstado;
-                    actualizarIconoCorazon();
-                    Toast.makeText(getContext(),
-                            "No se pudo actualizar favoritos",
-                            Toast.LENGTH_SHORT).show();
-                }
+            @Override public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) { esFavorito = !esFavorito; ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); }
             }
-
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                esFavorito = !nuevoEstado;
-                actualizarIconoCorazon();
-                Toast.makeText(getContext(),
-                        "Sin conexión: no se pudo actualizar favoritos",
-                        Toast.LENGTH_SHORT).show();
-            }
+            @Override public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) { esFavorito = !esFavorito; ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); }
         });
-    }
-    private void actualizarIconoCorazon() {
-        ivFavorito.setImageResource(
-                esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
-        );
     }
 }
