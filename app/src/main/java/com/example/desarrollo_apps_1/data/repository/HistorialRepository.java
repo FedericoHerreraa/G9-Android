@@ -76,7 +76,7 @@ public class HistorialRepository {
                                                 act.getId(),
                                                 act.getNombre(),
                                                 act.getDestino(),
-                                                res.getFecha(),
+                                                act.getFecha(), // Usamos la fecha de la actividad, no de la reserva
                                                 act.getGuia(),
                                                 act.getDuracion(),
                                                 act.getImagen(),

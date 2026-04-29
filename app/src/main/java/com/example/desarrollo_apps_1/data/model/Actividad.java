@@ -53,6 +53,9 @@ public class Actividad {
     @SerializedName("fotos")
     private List<String> fotos;
 
+    @SerializedName("fecha")
+    private String fecha;
+
     public int getId() { return id; }
     public String getNombre() { return nombre; }
     public String getDestino() { return destino; }
@@ -69,4 +72,5 @@ public class Actividad {
     public String getImagen() { return imagen; }
     public boolean isDestacada() { return destacada; }
     public List<String> getFotos() { return fotos; }
+    public String getFecha() { return fecha; }
 }

@@ -15,6 +15,7 @@ import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
 import com.example.desarrollo_apps_1.data.model.ReservaResponse;
 import com.example.desarrollo_apps_1.data.model.ReviewRequest;
+import com.example.desarrollo_apps_1.data.model.ReviewResponse;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
 
@@ -78,6 +79,12 @@ public interface ApiService {
 
     @POST("usuarios/historial/review")
     Call<Void> postReview(@Body ReviewRequest review);
+
+    @GET("usuarios/historial/review")
+    Call<ReviewResponse> getReview(
+            @Query("userId") String userId,
+            @Query("actividadId") int actividadId
+    );
 
     @GET("usuarios/historial")
     Call<List<HistorialItem>> getHistorial(

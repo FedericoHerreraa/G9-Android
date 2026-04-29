@@ -41,6 +41,9 @@ public class AuthRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenManager.saveToken(response.body().getToken());
                     tokenManager.saveEmail(response.body().getEmail());
+                    if (response.body().getUser() != null) {
+                        tokenManager.saveUserId(response.body().getUser().getUid());
+                    }
                     callback.onResult(AuthState.SUCCESS);
                 } else {
                     callback.onResult(AuthState.ERROR);
@@ -80,6 +83,9 @@ public class AuthRepository {
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenManager.saveToken(response.body().getToken());
+                    if (response.body().getUser() != null) {
+                        tokenManager.saveUserId(response.body().getUser().getUid());
+                    }
                     callback.onResult(AuthState.SUCCESS);
                 } else {
                     callback.onResult(AuthState.ERROR);

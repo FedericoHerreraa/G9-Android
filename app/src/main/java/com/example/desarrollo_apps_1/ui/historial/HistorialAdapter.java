@@ -8,8 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.data.local.entity.HistorialEntity;
 import com.example.desarrollo_apps_1.databinding.ItemHistorialBinding;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.ViewHolder> {
     private List<HistorialEntity> items = new ArrayList<>();
@@ -55,7 +60,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
 
         public void bind(HistorialEntity item) {
             binding.tvNombre.setText(item.getNombreActividad());
-            binding.tvFecha.setText(item.getFecha());
+            binding.tvFecha.setText(formatDate(item.getFecha()));
             binding.tvDestino.setText("Destino: " + item.getDestino());
             binding.tvGuia.setText("Guía: " + item.getGuia());
             binding.tvDuracion.setText("Duración: " + item.getDuracion());
@@ -72,6 +77,18 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
                     .into(binding.ivActividad);
 
             itemView.setOnClickListener(v -> listener.onItemClick(item));
+        }
+
+        private String formatDate(String dateStr) {
+            if (dateStr == null) return "";
+            try {
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+                Date date = inputFormat.parse(dateStr);
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                return outputFormat.format(date);
+            } catch (ParseException e) {
+                return dateStr;
+            }
         }
     }
 }
