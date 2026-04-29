@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
     <!-- Filtros -->
     <LinearLayout
@@ -19,6 +20,8 @@
             android:hint="Buscar por destino..."
             android:padding="10dp"
             android:layout_marginBottom="8dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#888888"
             android:background="@android:drawable/editbox_background"/>
 
         <Spinner
@@ -42,6 +45,8 @@
                 android:inputType="numberDecimal"
                 android:padding="10dp"
                 android:layout_marginEnd="4dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="#888888"
                 android:background="@android:drawable/editbox_background"/>
 
             <EditText
@@ -53,6 +58,8 @@
                 android:inputType="numberDecimal"
                 android:padding="10dp"
                 android:layout_marginStart="4dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="#888888"
                 android:background="@android:drawable/editbox_background"/>
 
         </LinearLayout>
@@ -65,6 +72,8 @@
             android:inputType="date"
             android:padding="10dp"
             android:layout_marginBottom="8dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#888888"
             android:background="@android:drawable/editbox_background"/>
 
         <Button
@@ -76,68 +85,81 @@
 
     </LinearLayout>
 
-    <!-- Destacadas -->
-    <LinearLayout
-        android:id="@+id/layoutDestacadas"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⭐ Destacadas"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="12dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvDestacadas"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <!-- Sección Destacadas/Recomendadas -->
+            <LinearLayout
+                android:id="@+id/layoutDestacadas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Todas las actividades"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="12dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Destacadas para ti"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:padding="12dp"
+                    android:textColor="@android:color/black"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDestacadas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"/>
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:textSize="16sp"
-        android:visibility="gone"
-        android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Todas las actividades"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:padding="12dp"
+                android:textColor="@android:color/black"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvActividades"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"/>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btnCargarMas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cargar más"
-        android:backgroundTint="#FF6B35"
-        android:visibility="gone"/>
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/red"
+                android:visibility="gone"
+                android:padding="16dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvActividades"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+
+            <Button
+                android:id="@+id/btnCargarMas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cargar más"
+                android:layout_margin="16dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -10,32 +11,22 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header con título -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:text="Mi Perfil"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FF6B35"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Mi Perfil"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#FF6B35"
-                android:gravity="center"/>
-        </LinearLayout>
-
-        <!-- Foto de perfil -->
         <ImageView
             android:id="@+id/ivPhoto"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_default_avatar"
-            android:contentDescription="Foto de perfil"
             android:layout_marginBottom="8dp"/>
 
         <Button
@@ -49,7 +40,23 @@
             android:layout_marginBottom="24dp"
             android:visibility="gone"/>
 
-        <!-- Datos personales -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seguridad"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="12dp"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchBiometric"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Habilitar ingreso por huella digital"
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,27 +66,13 @@
             android:textColor="#333333"
             android:layout_marginBottom="12dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre"
-            android:textSize="12sp"
-            android:textColor="#888888"/>
-
         <EditText
             android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Nombre"
             android:inputType="textPersonName"
-            android:padding="12dp"
             android:layout_marginBottom="12dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:textSize="12sp"
-            android:textColor="#888888"/>
 
         <TextView
             android:id="@+id/tvEmail"
@@ -90,22 +83,14 @@
             android:background="#F0F0F0"
             android:layout_marginBottom="12dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Teléfono de contacto"
-            android:textSize="12sp"
-            android:textColor="#888888"/>
-
         <EditText
             android:id="@+id/etPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Teléfono"
             android:inputType="phone"
-            android:padding="12dp"
             android:layout_marginBottom="24dp"/>
 
-        <!-- Preferencias de viaje (TPO Punto 2, item 2) -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -113,48 +98,15 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#333333"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Se usan para personalizar las sugerencias en la Home"
-            android:textSize="12sp"
-            android:textColor="#888888"
             android:layout_marginBottom="12dp"/>
 
-        <CheckBox
-            android:id="@+id/cbAventura"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Aventura"/>
+        <CheckBox android:id="@+id/cbAventura" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aventura"/>
+        <CheckBox android:id="@+id/cbCultura" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cultura"/>
+        <CheckBox android:id="@+id/cbGastronomia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gastronomía"/>
+        <CheckBox android:id="@+id/cbNaturaleza" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Naturaleza"/>
+        <CheckBox android:id="@+id/cbRelax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Relax" android:layout_marginBottom="24dp"/>
 
-        <CheckBox
-            android:id="@+id/cbCultura"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cultura"/>
-
-        <CheckBox
-            android:id="@+id/cbGastronomia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Gastronomía"/>
-
-        <CheckBox
-            android:id="@+id/cbNaturaleza"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Naturaleza"/>
-
-        <CheckBox
-            android:id="@+id/cbRelax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Relax"
-            android:layout_marginBottom="24dp"/>
-
-        <!-- Resumen de actividades (TPO Punto 2, item 3) -->
+        <!-- ESTADÍSTICAS (Punto 2, item 3) -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -223,7 +175,6 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Botones de acción -->
         <Button
             android:id="@+id/btnEdit"
             android:layout_width="match_parent"
@@ -253,7 +204,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
             android:visibility="gone"/>
 
     </LinearLayout>

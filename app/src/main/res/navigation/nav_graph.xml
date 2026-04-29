@@ -45,6 +45,14 @@
         <action
             android:id="@+id/action_homeFragment_to_historialFragment"
             app:destination="@id/historialFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_favoritosFragment"
+            app:destination="@id/favoritosFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_noticiasFragment"
+            app:destination="@id/noticiasFragment" />
     </fragment>
 
     <fragment
@@ -137,6 +145,29 @@
         tools:layout="@layout/fragment_historial">
         <action
             android:id="@+id/action_historial_to_detail"
+            app:destination="@id/actividadDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritosFragment"
+        android:name="com.example.desarrollo_apps_1.ui.favoritos.FavoritosFragment"
+        android:label="Mis Favoritos"
+        tools:layout="@layout/fragment_favoritos">
+        <action
+            android:id="@+id/action_favoritos_to_detail"
+            app:destination="@id/actividadDetailFragment" />
+        <action
+            android:id="@+id/action_favoritos_to_crearReserva"
+            app:destination="@id/crearReservaFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/noticiasFragment"
+        android:name="com.example.desarrollo_apps_1.ui.noticias.NoticiasFragment"
+        android:label="Noticias"
+        tools:layout="@layout/fragment_noticias">
+        <action
+            android:id="@+id/action_noticiasFragment_to_actividadDetailFragment"
             app:destination="@id/actividadDetailFragment" />
     </fragment>
 

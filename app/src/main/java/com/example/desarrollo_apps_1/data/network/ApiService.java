@@ -1,8 +1,11 @@
 package com.example.desarrollo_apps_1.data.network;
 
 import com.example.desarrollo_apps_1.data.model.Actividad;
+import com.example.desarrollo_apps_1.data.model.Noticia;
 import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
+import com.example.desarrollo_apps_1.data.model.CheckFavoritoResponse;
+import com.example.desarrollo_apps_1.data.model.FavoritosResponse;
 import com.example.desarrollo_apps_1.data.model.HistorialItem;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
 import com.example.desarrollo_apps_1.data.model.OtpRequest;
@@ -10,6 +13,7 @@ import com.example.desarrollo_apps_1.data.model.ProfileResponse;
 import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReservaRequest;
+import com.example.desarrollo_apps_1.data.model.ReservaResponse;
 import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
@@ -18,6 +22,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path;
@@ -66,11 +71,11 @@ public interface ApiService {
     Call<ReservaListResponse> getMisReservas();
 
     @POST("reservas")
-    Call<Reserva> crearReserva(@Body ReservaRequest body);
+    Call<ReservaResponse> crearReserva(@Body ReservaRequest body);
 
     @PATCH("reservas/{id}/cancelar")
     Call<Reserva> cancelarReserva(@Path("id") String id);
-  
+
     @POST("usuarios/historial/review")
     Call<Void> postReview(@Body ReviewRequest review);
 
@@ -80,4 +85,18 @@ public interface ApiService {
             @Query("fecha_fin") String fechaFin,
             @Query("destino") String destino
     );
+    @GET("favoritos")
+    Call<FavoritosResponse> getMisFavoritos();
+
+    @POST("favoritos/{actividadId}")
+    Call<Void> addFavorito(@Path("actividadId") int actividadId);
+
+    @DELETE("favoritos/{actividadId}")
+    Call<Void> removeFavorito(@Path("actividadId") int actividadId);
+
+    @GET("favoritos/{actividadId}/check")
+    Call<CheckFavoritoResponse> checkFavorito(@Path("actividadId") int actividadId);
+
+    @GET("noticias")
+    Call<List<Noticia>> getNoticias();
 }

@@ -52,13 +52,17 @@ public class CrearReservaFragment extends Fragment {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerHorario.setAdapter(spinnerAdapter);
 
+        setupObservers();
+
         binding.btnSeleccionarFecha.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
             new DatePickerDialog(
                     requireContext(),
                     (datePicker, year, month, day) -> {
                         fechaSeleccionada = String.format("%04d-%02d-%02d", year, month + 1, day);
-                        binding.tvFechaSeleccionada.setText(fechaSeleccionada);
+                        if (binding != null) {
+                            binding.tvFechaSeleccionada.setText(fechaSeleccionada);
+                        }
                     },
                     cal.get(Calendar.YEAR),
                     cal.get(Calendar.MONTH),
@@ -85,16 +89,20 @@ public class CrearReservaFragment extends Fragment {
             }
 
             String horario = (String) binding.spinnerHorario.getSelectedItem();
+            viewModel.crearReserva(actividadId, fechaSeleccionada, horario, cantidad);
+        });
+    }
 
-            viewModel.crearReserva(actividadId, fechaSeleccionada, horario, cantidad)
-                    .observe(getViewLifecycleOwner(), reserva -> {
-                        if (reserva != null) {
-                            Toast.makeText(requireContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
-                            Navigation.findNavController(view).popBackStack();
-                        } else {
-                            Toast.makeText(requireContext(), "Error al crear la reserva", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+    private void setupObservers() {
+        viewModel.getReservaCreada().observe(getViewLifecycleOwner(), reserva -> {
+            if (reserva != null) {
+                Toast.makeText(requireContext(), "Reserva creada exitosamente", Toast.LENGTH_SHORT).show();
+                viewModel.resetReservaStatus();
+                Navigation.findNavController(requireView()).popBackStack();
+            } else {
+                // El estado podría ser null si se reseteó o si falló. 
+                // Para simplificar aquí solo pop si no es null, pero se podría manejar el error mejor.
+            }
         });
     }
 

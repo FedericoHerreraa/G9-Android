@@ -19,6 +19,7 @@ import io.reactivex.rxjava3.core.Single;
 public class SettingsManager {
     private final RxDataStore<Preferences> dataStore;
     private final Preferences.Key<Boolean> AUTO_EXPORT_KEY = PreferencesKeys.booleanKey("auto_export");
+    private final Preferences.Key<Boolean> BIOMETRIC_ENABLED_KEY = PreferencesKeys.booleanKey("biometric_enabled");
 
     @Inject
     public SettingsManager(@ApplicationContext Context context) {
@@ -33,6 +34,18 @@ public class SettingsManager {
         return dataStore.updateDataAsync(prefsIn -> {
             MutablePreferences mutablePreferences = prefsIn.toMutablePreferences();
             mutablePreferences.set(AUTO_EXPORT_KEY, enabled);
+            return Single.just(mutablePreferences);
+        });
+    }
+
+    public Flowable<Boolean> isBiometricEnabled() {
+        return dataStore.data().map(prefs -> prefs.get(BIOMETRIC_ENABLED_KEY) != null ? prefs.get(BIOMETRIC_ENABLED_KEY) : false);
+    }
+
+    public Single<Preferences> setBiometricEnabled(boolean enabled) {
+        return dataStore.updateDataAsync(prefsIn -> {
+            MutablePreferences mutablePreferences = prefsIn.toMutablePreferences();
+            mutablePreferences.set(BIOMETRIC_ENABLED_KEY, enabled);
             return Single.just(mutablePreferences);
         });
     }

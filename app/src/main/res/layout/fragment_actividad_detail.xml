@@ -23,13 +23,32 @@
             android:textSize="16sp"
             android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/ivActividad"
+        <FrameLayout
+            android:id="@+id/imageContainer"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            android:contentDescription="Imagen de la actividad" />
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivActividad"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Imagen de la actividad" />
+
+            <ImageView
+                android:id="@+id/ivFavorito"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="12dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_heart_outline"
+                android:background="#88FFFFFF"
+                android:contentDescription="Marcar como favorito"
+                android:clickable="true"
+                android:focusable="true" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tvNombre"

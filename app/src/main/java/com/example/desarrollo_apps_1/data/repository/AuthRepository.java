@@ -1,8 +1,5 @@
 package com.example.desarrollo_apps_1.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.AuthResponse;
 import com.example.desarrollo_apps_1.data.model.LoginRequest;
@@ -19,6 +16,10 @@ import retrofit2.Response;
 @Singleton
 public class AuthRepository {
 
+    public interface AuthCallback {
+        void onResult(AuthState state);
+    }
+
     private final ApiService apiService;
     private final TokenManager tokenManager;
 
@@ -29,83 +30,67 @@ public class AuthRepository {
     }
 
     public enum AuthState {
-        LOADING, SUCCESS, ERROR
+        IDLE, LOADING, SUCCESS, ERROR
     }
 
-    public LiveData<AuthState> login(String email, String password) {
-        MutableLiveData<AuthState> result = new MutableLiveData<>();
-        result.setValue(AuthState.LOADING);
-
+    public void login(String email, String password, AuthCallback callback) {
         LoginRequest request = new LoginRequest(email, password);
         apiService.login(request).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    android.util.Log.d("Auth response", "Token recibido: " + response.body().getToken());
                     tokenManager.saveToken(response.body().getToken());
                     tokenManager.saveEmail(response.body().getEmail());
-                    result.setValue(AuthState.SUCCESS);
+                    callback.onResult(AuthState.SUCCESS);
                 } else {
-                    result.setValue(AuthState.ERROR);
+                    callback.onResult(AuthState.ERROR);
                 }
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                result.setValue(AuthState.ERROR);
+                callback.onResult(AuthState.ERROR);
             }
         });
-
-        return result;
     }
 
-    public LiveData<AuthState> sendOtp(String email) {
-        MutableLiveData<AuthState> result = new MutableLiveData<>();
-        result.setValue(AuthState.LOADING);
-
+    public void sendOtp(String email, AuthCallback callback) {
         OtpRequest request = new OtpRequest(email);
         apiService.sendOtp(request).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    result.setValue(AuthState.SUCCESS);
+                    callback.onResult(AuthState.SUCCESS);
                 } else {
-                    result.setValue(AuthState.ERROR);
+                    callback.onResult(AuthState.ERROR);
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                result.setValue(AuthState.ERROR);
+                callback.onResult(AuthState.ERROR);
             }
         });
-
-        return result;
     }
 
-    public LiveData<AuthState> verifyOtp(String email, String otp) {
-        MutableLiveData<AuthState> result = new MutableLiveData<>();
-        result.setValue(AuthState.LOADING);
-
+    public void verifyOtp(String email, String otp, AuthCallback callback) {
         OtpRequest request = new OtpRequest(email, otp);
         apiService.verifyOtp(request).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tokenManager.saveToken(response.body().getToken());
-                    result.setValue(AuthState.SUCCESS);
+                    callback.onResult(AuthState.SUCCESS);
                 } else {
-                    result.setValue(AuthState.ERROR);
+                    callback.onResult(AuthState.ERROR);
                 }
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                result.setValue(AuthState.ERROR);
+                callback.onResult(AuthState.ERROR);
             }
         });
-
-        return result;
     }
 
     public void logout() {

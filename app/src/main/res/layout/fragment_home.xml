@@ -1,65 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="32dp">
+    android:fillViewport="true"
+    android:background="@color/background_light">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="¡Bienvenido a XploreNow!"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#FF6B35"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:id="@+id/tvEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#888888"
-        android:layout_marginBottom="32dp"/>
-
-    <Button
-        android:id="@+id/btnActividades"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ver Actividades"
-        android:backgroundTint="#FF6B35"
-        android:layout_marginBottom="12dp"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
 
-    <Button
-        android:id="@+id/btnHistorial"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Historial de Actividades"
-        android:backgroundTint="#FF6B35"
-        android:layout_marginBottom="12dp"/>
+        <ImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:src="@mipmap/ic_launcher_round" />
 
-    <Button
-        android:id="@+id/btnProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Mi Perfil"
-        android:backgroundTint="#FF6B35"
-        android:layout_marginBottom="12dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¡Bienvenido a XploreNow!"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="4dp"
+            android:textAlignment="center"/>
 
-    <Button
-        android:id="@+id/btnMisReservas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Mis Actividades"
-        android:backgroundTint="#FF6B35"
-        android:layout_marginBottom="12dp"/>
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="32dp"
+            android:text="admin@uade.edu.ar"/>
 
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
-        android:backgroundTint="#888888"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnActividades"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Ver Actividades"
+            app:backgroundTint="@color/accent"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            app:icon="@android:drawable/ic_menu_search"
+            app:iconGravity="textStart"/>
 
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHistorial"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Historial de Actividades"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProfile"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Mi Perfil"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMisReservas"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Mis Actividades"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavoritos"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Mis Favoritos"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNoticias"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Noticias"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="40dp"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Cerrar Sesión"
+            android:textColor="@color/red"
+            app:strokeColor="@color/red"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+</ScrollView>

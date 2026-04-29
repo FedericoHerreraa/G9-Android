@@ -6,28 +6,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.Actividad;
 import com.example.desarrollo_apps_1.data.model.ActividadListResponse;
+import com.example.desarrollo_apps_1.data.model.Favorito;
+import com.example.desarrollo_apps_1.data.model.FavoritosResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
+import com.example.desarrollo_apps_1.databinding.FragmentActividadListBinding;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -47,16 +46,10 @@ public class ActividadListFragment extends Fragment {
     @Inject
     TokenManager tokenManager;
 
-    private EditText etDestino, etPrecioMin, etPrecioMax, etFecha;
-    private Spinner spinnerCategoria;
-    private ProgressBar progressBar;
-    private TextView tvError;
-    private RecyclerView rvActividades, rvDestacadas;
-    private LinearLayout layoutDestacadas;
-    private Button btnCargarMas;
+    private FragmentActividadListBinding binding;
 
     private ActividadAdapter adapter;
-    private List<Actividad> listaActividades = new ArrayList<>();
+    private final List<Actividad> listaActividades = new ArrayList<>();
     private int paginaActual = 1;
     private String destinoActual, categoriaActual, fechaActual;
     private Double precioMinActual, precioMaxActual;
@@ -66,30 +59,23 @@ public class ActividadListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_actividad_list, container, false);
+        binding = FragmentActividadListBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etDestino = view.findViewById(R.id.etDestino);
-        etPrecioMin = view.findViewById(R.id.etPrecioMin);
-        etPrecioMax = view.findViewById(R.id.etPrecioMax);
-        etFecha = view.findViewById(R.id.etFecha);
-        spinnerCategoria = view.findViewById(R.id.spinnerCategoria);
-        progressBar = view.findViewById(R.id.progressBar);
-        tvError = view.findViewById(R.id.tvError);
-        rvActividades = view.findViewById(R.id.rvActividades);
-        rvDestacadas = view.findViewById(R.id.rvDestacadas);
-        layoutDestacadas = view.findViewById(R.id.layoutDestacadas);
-        btnCargarMas = view.findViewById(R.id.btnCargarMas);
+        adapter = new ActividadAdapter(
+                listaActividades,
+                actividadId -> navegarADetalle(actividadId),
+                this::toggleFavorito
+        );
+        binding.rvActividades.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvActividades.setAdapter(adapter);
 
-        adapter = new ActividadAdapter(listaActividades, actividadId -> navegarADetalle(actividadId));
-        rvActividades.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvActividades.setAdapter(adapter);
-
-        rvDestacadas.setLayoutManager(
+        binding.rvDestacadas.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // Categorías del spinner
@@ -98,19 +84,18 @@ public class ActividadListFragment extends Fragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item, categorias);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategoria.setAdapter(spinnerAdapter);
+        binding.spinnerCategoria.setAdapter(spinnerAdapter);
 
-        // Cargar primera página y recomendadas
         cargarActividades(1, false);
         cargarRecomendadas();
+        cargarFavoritos();
 
-        // Botón filtrar
-        view.findViewById(R.id.btnFiltrar).setOnClickListener(v -> {
-            String destino = etDestino.getText().toString().trim();
-            String categoria = spinnerCategoria.getSelectedItem().toString();
-            String precioMinStr = etPrecioMin.getText().toString().trim();
-            String precioMaxStr = etPrecioMax.getText().toString().trim();
-            String fecha = etFecha.getText().toString().trim();
+        binding.btnFiltrar.setOnClickListener(v -> {
+            String destino = binding.etDestino.getText().toString().trim();
+            String categoria = binding.spinnerCategoria.getSelectedItem().toString();
+            String precioMinStr = binding.etPrecioMin.getText().toString().trim();
+            String precioMaxStr = binding.etPrecioMax.getText().toString().trim();
+            String fecha = binding.etFecha.getText().toString().trim();
 
             destinoActual = destino.isEmpty() ? null : destino;
             categoriaActual = categoria.equals("Todas") ? null : categoria;
@@ -123,17 +108,28 @@ public class ActividadListFragment extends Fragment {
             cargarActividades(1, false);
         });
 
-        // Botón cargar más
-        btnCargarMas.setOnClickListener(v -> {
+        binding.btnCargarMas.setOnClickListener(v -> {
             paginaActual++;
             cargarActividades(paginaActual, true);
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarFavoritos();
+    }
+
     private void cargarActividades(int pagina, boolean agregar) {
-        progressBar.setVisibility(View.VISIBLE);
-        btnCargarMas.setVisibility(View.GONE);
-        tvError.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.btnCargarMas.setVisibility(View.GONE);
+        binding.tvError.setVisibility(View.GONE);
 
         apiService.getActividades(20, pagina, destinoActual, categoriaActual,
                         precioMinActual, precioMaxActual, fechaActual, null)
@@ -141,23 +137,22 @@ public class ActividadListFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<ActividadListResponse> call,
                                            @NonNull Response<ActividadListResponse> response) {
-                        progressBar.setVisibility(View.GONE);
+                        if (binding == null) return;
+                        binding.progressBar.setVisibility(View.GONE);
 
                         if (response.isSuccessful() && response.body() != null) {
                             ActividadListResponse body = response.body();
 
-                            // Destacadas solo en primera página
                             if (pagina == 1 && body.getDestacadas() != null
                                     && !body.getDestacadas().isEmpty()) {
                                 ActividadAdapter destacadasAdapter = new ActividadAdapter(
                                         body.getDestacadas(),
-                                        actividadId -> navegarADetalle(actividadId)
+                                        ActividadListFragment.this::navegarADetalle
                                 );
-                                rvDestacadas.setAdapter(destacadasAdapter);
-                                layoutDestacadas.setVisibility(View.VISIBLE);
+                                binding.rvDestacadas.setAdapter(destacadasAdapter);
+                                binding.layoutDestacadas.setVisibility(View.VISIBLE);
                             }
 
-                            // Agregar o reemplazar lista
                             if (agregar) {
                                 listaActividades.addAll(body.getResults());
                             } else {
@@ -165,25 +160,25 @@ public class ActividadListFragment extends Fragment {
                                 listaActividades.addAll(body.getResults());
                             }
                             adapter.notifyDataSetChanged();
-                            rvActividades.setVisibility(View.VISIBLE);
+                            binding.rvActividades.setVisibility(View.VISIBLE);
 
-                            // Mostrar botón si hay más páginas
                             if (pagina < body.getTotal_pages()) {
-                                btnCargarMas.setVisibility(View.VISIBLE);
+                                binding.btnCargarMas.setVisibility(View.VISIBLE);
                             }
 
                         } else {
-                            tvError.setText("Error " + response.code() + ": no se pudo cargar la lista.");
-                            tvError.setVisibility(View.VISIBLE);
+                            binding.tvError.setText("Error " + response.code() + ": no se pudo cargar la lista.");
+                            binding.tvError.setVisibility(View.VISIBLE);
                             Log.e(TAG, "Error HTTP: " + response.code());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ActividadListResponse> call, @NonNull Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        tvError.setText("Error de red: " + t.getMessage());
-                        tvError.setVisibility(View.VISIBLE);
+                        if (binding == null) return;
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.tvError.setText("Error de red: " + t.getMessage());
+                        binding.tvError.setVisibility(View.VISIBLE);
                         Log.e(TAG, "onFailure: " + t.getMessage());
                     }
                 });
@@ -198,14 +193,15 @@ public class ActividadListFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<List<Actividad>> call,
                                            @NonNull Response<List<Actividad>> response) {
+                        if (binding == null) return;
                         if (response.isSuccessful() && response.body() != null
                                 && !response.body().isEmpty()) {
                             ActividadAdapter recomendadasAdapter = new ActividadAdapter(
                                     response.body(),
-                                    actividadId -> navegarADetalle(actividadId)
+                                    ActividadListFragment.this::navegarADetalle
                             );
-                            rvDestacadas.setAdapter(recomendadasAdapter);
-                            layoutDestacadas.setVisibility(View.VISIBLE);
+                            binding.rvDestacadas.setAdapter(recomendadasAdapter);
+                            binding.layoutDestacadas.setVisibility(View.VISIBLE);
                         }
                     }
 
@@ -215,7 +211,55 @@ public class ActividadListFragment extends Fragment {
                     }
                 });
     }
+    private void cargarFavoritos() {
+        apiService.getMisFavoritos().enqueue(new Callback<FavoritosResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<FavoritosResponse> call,
+                                   @NonNull Response<FavoritosResponse> response) {
+                if (binding == null) return;
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getFavoritos() != null) {
+                    Set<Integer> ids = new HashSet<>();
+                    for (Favorito f : response.body().getFavoritos()) {
+                        ids.add(f.getActividadId());
+                    }
+                    adapter.setFavoritosIds(ids);
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<FavoritosResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Error cargando favoritos: " + t.getMessage());
+            }
+        });
+    }
+    private void toggleFavorito(int actividadId, boolean nuevoEstado) {
+        adapter.setFavorito(actividadId, nuevoEstado);
+
+        Call<Void> call = nuevoEstado
+                ? apiService.addFavorito(actividadId)
+                : apiService.removeFavorito(actividadId);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    adapter.setFavorito(actividadId, !nuevoEstado);
+                    Toast.makeText(getContext(),
+                            "No se pudo actualizar favoritos",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                adapter.setFavorito(actividadId, !nuevoEstado);
+                Toast.makeText(getContext(),
+                        "Sin conexión: no se pudo actualizar favoritos",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void navegarADetalle(int actividadId) {
         Bundle args = new Bundle();
         args.putInt("actividadId", actividadId);

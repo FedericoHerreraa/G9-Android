@@ -60,6 +60,15 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/ivFavorito"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_heart_outline"
+            android:padding="4dp"
+            android:contentDescription="Marcar como favorito"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
