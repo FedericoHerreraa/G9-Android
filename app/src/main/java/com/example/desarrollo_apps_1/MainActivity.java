@@ -11,7 +11,10 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.desarrollo_apps_1.data.local.NetworkMonitor;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
+import com.example.desarrollo_apps_1.data.repository.FavoritoRepository;
+import com.example.desarrollo_apps_1.data.repository.ReservaRepository;
 import com.example.desarrollo_apps_1.databinding.ActivityMainBinding;
 
 import javax.inject.Inject;
@@ -25,8 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
 
-    @Inject
-    TokenManager tokenManager;
+    @Inject TokenManager tokenManager;
+    @Inject NetworkMonitor networkMonitor;
+    @Inject ReservaRepository reservaRepository;
+    @Inject FavoritoRepository favoritoRepository;
+
+    private boolean wasOffline = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
             navController = navHostFragment.getNavController();
 
             NavGraph navGraph = navController.getNavInflater().inflate(R.navigation.nav_graph);
-            // Siempre empezamos en LoginFragment para que maneje la biometría o el autologin
             navGraph.setStartDestination(R.id.loginFragment);
             navController.setGraph(navGraph);
 
@@ -56,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
 
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-                if (destination.getId() == R.id.loginFragment) {
+                if (destination.getId() == R.id.loginFragment || destination.getId() == R.id.otpFragment) {
                     if (getSupportActionBar() != null) getSupportActionBar().hide();
                     binding.bottomNavigation.setVisibility(View.GONE);
                 } else {
@@ -66,6 +72,31 @@ public class MainActivity extends AppCompatActivity {
             });
 
             observeSessionStatus();
+            observeNetworkStatus();
+        }
+    }
+
+    private void observeNetworkStatus() {
+        networkMonitor.getIsConnected().observe(this, isConnected -> {
+            if (binding.layoutOffline != null) {
+                binding.layoutOffline.tvOfflineBanner.setVisibility(isConnected ? View.GONE : View.VISIBLE);
+            }
+
+            // Punto 8.20: Sincronización automática al recuperar conexión
+            if (isConnected && wasOffline) {
+                syncData();
+                Toast.makeText(this, "Conexión recuperada. Sincronizando datos...", Toast.LENGTH_SHORT).show();
+            }
+            wasOffline = !isConnected;
+        });
+    }
+
+    private void syncData() {
+        if (tokenManager.isLoggedIn()) {
+            // Refrescar reservas (esto actualiza Room automáticamente)
+            reservaRepository.getMisReservas(result -> {});
+            // Refrescar favoritos (esto actualiza Room automáticamente)
+            favoritoRepository.syncFavoritos();
         }
     }
 

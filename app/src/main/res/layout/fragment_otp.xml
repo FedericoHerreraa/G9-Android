@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Verificación OTP"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="48dp" />
+
+    <TextView
+        android:id="@+id/tvOtpInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ingresá el código de 6 dígitos enviado a tu email"
+        android:layout_marginTop="16dp"
+        android:gravity="center" />
+
+    <EditText
+        android:id="@+id/etOtpCode"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hint="000000"
+        android:inputType="number"
+        android:maxLength="6"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:letterSpacing="0.2" />
+
+    <Button
+        android:id="@+id/btnVerifyOtp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Verificar y Entrar"
+        android:backgroundTint="#FF6B35" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/btnResendOtp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="¿No recibiste el código? Reenviar"
+        android:textColor="#FF6B35"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>

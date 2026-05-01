@@ -1,6 +1,7 @@
 package com.example.desarrollo_apps_1.data.model;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 public class Reserva {
 
@@ -43,6 +44,9 @@ public class Reserva {
     @SerializedName("cuposDisponibles")
     private int cuposDisponibles;
 
+    @SerializedName("itinerario")
+    private List<String> itinerario; // Punto 10.27
+
     public Reserva() {}
 
     public Reserva(String id, String actividadId, String actividadNombre, String destino,
@@ -74,4 +78,5 @@ public class Reserva {
     public String getUserId() { return userId; }
     public String getPoliticaCancelacion() { return politicaCancelacion; }
     public int getCuposDisponibles() { return cuposDisponibles; }
+    public List<String> getItinerario() { return itinerario; }
 }

@@ -28,7 +28,10 @@ import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.local.ProfilePhotoManager;
 import com.example.desarrollo_apps_1.data.local.SettingsManager;
+import com.example.desarrollo_apps_1.data.model.Reserva;
+import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.UserProfile;
+import com.example.desarrollo_apps_1.data.network.ApiService;
 import com.example.desarrollo_apps_1.data.repository.ProfileRepository;
 import com.example.desarrollo_apps_1.databinding.FragmentProfileBinding;
 
@@ -43,6 +46,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @AndroidEntryPoint
 public class ProfileFragment extends Fragment {
@@ -62,6 +68,7 @@ public class ProfileFragment extends Fragment {
 
     @Inject ProfilePhotoManager photoManager;
     @Inject SettingsManager settingsManager;
+    @Inject ApiService apiService;
 
     private boolean editMode = false;
 
@@ -80,6 +87,7 @@ public class ProfileFragment extends Fragment {
         setEditMode(false);
         loadSavedPhoto();
         fetchProfile();
+        fetchStats();
         setupBiometricSwitch();
 
         binding.btnEdit.setOnClickListener(v -> setEditMode(true));
@@ -94,13 +102,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupBiometricSwitch() {
-        // Cargar estado inicial
         disposables.add(settingsManager.isBiometricEnabled()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(enabled -> binding.switchBiometric.setChecked(enabled), t -> {}));
 
-        // Escuchar cambios
         binding.switchBiometric.setOnCheckedChangeListener((buttonView, isChecked) -> {
             disposables.add(settingsManager.setBiometricEnabled(isChecked)
                     .subscribeOn(Schedulers.io())
@@ -119,6 +125,31 @@ public class ProfileFragment extends Fragment {
             } else {
                 binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), resource.message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchStats() {
+        apiService.getMisReservas().enqueue(new Callback<ReservaListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ReservaListResponse> call, @NonNull Response<ReservaListResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int reservadas = 0;
+                    int realizadas = 0;
+                    for (Reserva r : response.body().getReservas()) {
+                        if ("confirmada".equalsIgnoreCase(r.getEstado())) reservadas++;
+                        else if ("finalizada".equalsIgnoreCase(r.getEstado())) realizadas++;
+                    }
+                    if (binding != null) {
+                        binding.tvReservadas.setText(String.valueOf(reservadas));
+                        binding.tvRealizadas.setText(String.valueOf(realizadas));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ReservaListResponse> call, @NonNull Throwable t) {
+                // No mostramos error para no interrumpir el flujo principal del perfil
             }
         });
     }

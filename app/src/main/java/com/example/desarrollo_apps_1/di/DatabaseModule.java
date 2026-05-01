@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.example.desarrollo_apps_1.data.local.AppDatabase;
 import com.example.desarrollo_apps_1.data.local.NetworkMonitor;
+import com.example.desarrollo_apps_1.data.local.dao.FavoritoDao;
 import com.example.desarrollo_apps_1.data.local.dao.HistorialDao;
 import com.example.desarrollo_apps_1.data.local.dao.ReservaDao;
 
@@ -39,6 +40,12 @@ public class DatabaseModule {
     @Singleton
     public static ReservaDao provideReservaDao(AppDatabase database) {
         return database.reservaDao();
+    }
+
+    @Provides
+    @Singleton
+    public static FavoritoDao provideFavoritoDao(AppDatabase database) {
+        return database.favoritoDao();
     }
 
     @Provides
