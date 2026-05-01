@@ -65,9 +65,7 @@ public class OtpFragment extends Fragment {
                 binding.btnVerifyOtp.setEnabled(false);
             } else if (state == AuthRepository.AuthState.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
-                Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment); // O a la acción que limpie el stack a Home
-                // Nota: Usaremos la acción global o específica en el nav_graph
-                irAHome();
+                Navigation.findNavController(requireView()).navigate(R.id.action_otp_to_home);
             } else if (state == AuthRepository.AuthState.ERROR) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerifyOtp.setEnabled(true);
@@ -77,12 +75,6 @@ public class OtpFragment extends Fragment {
                 binding.btnVerifyOtp.setEnabled(true);
             }
         });
-    }
-
-    private void irAHome() {
-        if (getView() != null) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_homeFragment);
-        }
     }
 
     @Override

@@ -11,6 +11,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 @Singleton
 public class ProfilePhotoManager {
 
@@ -22,7 +24,7 @@ public class ProfilePhotoManager {
     private final SharedPreferences prefs;
 
     @Inject
-    public ProfilePhotoManager(Context context) {
+    public ProfilePhotoManager(@ApplicationContext Context context) {
         this.context = context;
         this.prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
