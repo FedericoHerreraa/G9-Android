@@ -45,14 +45,16 @@ public class TokenManager {
     }
 
     public void saveToken(String token) {
-        _isSessionExpired.setValue(false);
-        prefs.edit().putString(KEY_TOKEN, token).apply();
+        _isSessionExpired.postValue(false);
+        // Usamos commit() en lugar de apply() para asegurar que el token se guarde 
+        // antes de las siguientes peticiones de red al cambiar de fragmento.
+        prefs.edit().putString(KEY_TOKEN, token).commit();
     }
 
     public String getToken() { return prefs.getString(KEY_TOKEN, null); }
 
     public void saveEmail(String email) {
-        prefs.edit().putString(KEY_USER_EMAIL, email).apply();
+        prefs.edit().putString(KEY_USER_EMAIL, email).commit();
     }
 
     public String getEmail() {
@@ -60,7 +62,7 @@ public class TokenManager {
     }
 
     public void saveUserId(String userId) {
-        prefs.edit().putString(KEY_USER_ID, userId).apply();
+        prefs.edit().putString(KEY_USER_ID, userId).commit();
     }
 
     public String getUserId() {
@@ -72,7 +74,7 @@ public class TokenManager {
     }
 
     public void logout() {
-        prefs.edit().clear().apply();
+        prefs.edit().clear().commit();
         _isSessionExpired.postValue(true);
     }
 
@@ -81,11 +83,11 @@ public class TokenManager {
     }
 
     public void resetSessionExpired() {
-        _isSessionExpired.setValue(false);
+        _isSessionExpired.postValue(false);
     }
 
     public void setBiometricEnabled(boolean enabled) {
-        prefs.edit().putBoolean(KEY_BIOMETRIC_ENABLED, enabled).apply();
+        prefs.edit().putBoolean(KEY_BIOMETRIC_ENABLED, enabled).commit();
     }
 
     public boolean isBiometricEnabled() {
@@ -93,7 +95,7 @@ public class TokenManager {
     }
 
     public void savePreferencias(String preferencias) {
-        prefs.edit().putString("preferencias", preferencias).apply();
+        prefs.edit().putString("preferencias", preferencias).commit();
     }
 
     public String getPreferencias() {

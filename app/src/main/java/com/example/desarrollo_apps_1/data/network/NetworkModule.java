@@ -23,6 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     private static final String BASE_URL = "https://backend-apps-1.onrender.com/";
+
     @Provides
     @Singleton
     public static Context provideContext(@ApplicationContext Context context) {
@@ -44,17 +45,28 @@ public class NetworkModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request original = chain.request();
-                    String token = tokenManager.getToken();
+                    
+                    // Si es una ruta de auth, no agregamos el token para evitar problemas
+                    String path = original.url().encodedPath();
+                    if (path.contains("/auth/login") || path.contains("/auth/otp")) {
+                        return chain.proceed(original);
+                    }
+
+                    String requestToken = tokenManager.getToken();
                     Request.Builder builder = original.newBuilder();
 
-                    if (token != null) {
-                        builder.header("Authorization", "Bearer " + token);
+                    if (requestToken != null && !requestToken.isEmpty()) {
+                        builder.header("Authorization", "Bearer " + requestToken);
                     }
 
                     Response response = chain.proceed(builder.build());
 
+                    // Solo deslogueamos si el token que falló es el que tenemos guardado
                     if (response.code() == 401) {
-                        tokenManager.logout();
+                        String currentToken = tokenManager.getToken();
+                        if (requestToken != null && requestToken.equals(currentToken)) {
+                            tokenManager.logout();
+                        }
                     }
 
                     return response;

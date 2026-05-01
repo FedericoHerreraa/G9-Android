@@ -30,11 +30,13 @@ public class AuthResponse {
     public static class UserData {
         private String uid;
         private String email;
+        private String name;
         @SerializedName("idToken")
         private String idToken;
 
         public String getUid() { return uid; }
         public String getEmail() { return email; }
+        public String getName() { return name; }
         public String getIdToken() { return idToken; }
     }
 }
