@@ -6,12 +6,20 @@ public class AuthResponse {
     private boolean success;
     private String message;
     private UserData user;
+    @SerializedName("idToken")
+    private String idToken;
+    @SerializedName("customToken")
+    private String customToken;
 
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
     public UserData getUser() { return user; }
+    public String getIdToken() { return idToken; }
+    public String getCustomToken() { return customToken; }
 
     public String getToken() {
+        if (idToken != null) return idToken;
+        if (customToken != null) return customToken;
         return (user != null) ? user.getIdToken() : null;
     }
 
