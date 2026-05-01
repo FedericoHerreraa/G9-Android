@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.desarrollo_apps_1.data.model.UserProfile;
+import com.example.desarrollo_apps_1.data.repository.AuthRepository;
 import com.example.desarrollo_apps_1.data.repository.ProfileRepository;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class ProfileViewModel extends ViewModel {
 
     private final ProfileRepository profileRepository;
+    private final AuthRepository authRepository;
 
     @Inject
-    public ProfileViewModel(ProfileRepository profileRepository) {
+    public ProfileViewModel(ProfileRepository profileRepository, AuthRepository authRepository) {
         this.profileRepository = profileRepository;
+        this.authRepository = authRepository;
     }
 
     public LiveData<ProfileRepository.Resource<UserProfile>> loadProfile() {
@@ -28,5 +31,9 @@ public class ProfileViewModel extends ViewModel {
     public LiveData<ProfileRepository.Resource<UserProfile>> updateProfile(
             String name, String phone, List<String> preferences) {
         return profileRepository.updateProfile(name, phone, preferences);
+    }
+
+    public void logout() {
+        authRepository.logout();
     }
 }

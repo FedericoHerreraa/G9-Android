@@ -99,6 +99,11 @@ public class ProfileFragment extends Fragment {
 
         binding.ivPhoto.setOnClickListener(v -> { if (editMode) requestGalleryPermission(); });
         binding.btnChangePhoto.setOnClickListener(v -> requestGalleryPermission());
+
+        binding.btnLogout.setOnClickListener(v -> {
+            profileViewModel.logout();
+            Navigation.findNavController(view).navigate(R.id.action_profileFragment_to_loginFragment);
+        });
     }
 
     private void setupBiometricSwitch() {
@@ -216,6 +221,7 @@ public class ProfileFragment extends Fragment {
         binding.btnSave.setVisibility(enabled ? View.VISIBLE : View.GONE);
         binding.btnCancel.setVisibility(enabled ? View.VISIBLE : View.GONE);
         binding.btnChangePhoto.setVisibility(enabled ? View.VISIBLE : View.GONE);
+        binding.btnLogout.setVisibility(enabled ? View.GONE : View.VISIBLE);
     }
 
     private void requestGalleryPermission() {
