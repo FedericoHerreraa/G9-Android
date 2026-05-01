@@ -65,7 +65,7 @@ public class OtpFragment extends Fragment {
                 binding.btnVerifyOtp.setEnabled(false);
             } else if (state == AuthRepository.AuthState.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
-                Navigation.findNavController(requireView()).navigate(R.id.action_otp_to_home);
+                irAHome();
             } else if (state == AuthRepository.AuthState.ERROR) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerifyOtp.setEnabled(true);
@@ -75,6 +75,12 @@ public class OtpFragment extends Fragment {
                 binding.btnVerifyOtp.setEnabled(true);
             }
         });
+    }
+
+    private void irAHome() {
+        if (getView() != null) {
+            Navigation.findNavController(requireView()).navigate(R.id.action_otpFragment_to_homeFragment);
+        }
     }
 
     @Override
