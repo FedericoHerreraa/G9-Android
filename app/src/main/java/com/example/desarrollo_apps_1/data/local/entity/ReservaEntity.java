@@ -1,12 +1,11 @@
 package com.example.desarrollo_apps_1.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
 
-@Entity(tableName = "reservas_local")
+@Entity(tableName = "reservas")
 public class ReservaEntity {
-
     @PrimaryKey
     @NonNull
     private String id;
@@ -20,12 +19,10 @@ public class ReservaEntity {
     private String estado;
     private String politicaCancelacion;
     private String imagen;
-    private long creadoEn;
+    private long timestamp;
+    private String itinerarioCsv; // Punto 10.27 Offline
 
-    public ReservaEntity(@NonNull String id, String actividadId, String actividadNombre,
-                         String destino, String puntoEncuentro, String fecha, String horario,
-                         int cantidadParticipantes, String estado, String politicaCancelacion,
-                         String imagen, long creadoEn) {
+    public ReservaEntity(@NonNull String id, String actividadId, String actividadNombre, String destino, String puntoEncuentro, String fecha, String horario, int cantidadParticipantes, String estado, String politicaCancelacion, String imagen, long timestamp, String itinerarioCsv) {
         this.id = id;
         this.actividadId = actividadId;
         this.actividadNombre = actividadNombre;
@@ -37,7 +34,8 @@ public class ReservaEntity {
         this.estado = estado;
         this.politicaCancelacion = politicaCancelacion;
         this.imagen = imagen;
-        this.creadoEn = creadoEn;
+        this.timestamp = timestamp;
+        this.itinerarioCsv = itinerarioCsv;
     }
 
     @NonNull public String getId() { return id; }
@@ -51,8 +49,6 @@ public class ReservaEntity {
     public String getEstado() { return estado; }
     public String getPoliticaCancelacion() { return politicaCancelacion; }
     public String getImagen() { return imagen; }
-    public long getCreadoEn() { return creadoEn; }
-
-    public void setId(@NonNull String id) { this.id = id; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public long getTimestamp() { return timestamp; }
+    public String getItinerarioCsv() { return itinerarioCsv; }
 }

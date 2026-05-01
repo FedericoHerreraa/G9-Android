@@ -68,5 +68,32 @@
             android:backgroundTint="#4CAF50"
             app:icon="@android:drawable/ic_menu_directions" />
 
+        <TextView
+            android:id="@+id/tvPoliticaCancelacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textSize="13sp"
+            android:textColor="#666666"
+            android:textStyle="italic" />
+
+        <Button
+            android:id="@+id/btnCancelarReserva"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="CANCELAR RESERVA"
+            android:textColor="#D32F2F"
+            app:strokeColor="#D32F2F" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 </ScrollView>

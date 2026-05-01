@@ -102,26 +102,9 @@ public class ReservaRepository {
     }
 
     private void guardarReservaLocalmente(Reserva reserva) {
-        if (reserva == null || reserva.getId() == null) {
-            Log.e("ReservaRepository", "No se puede guardar una reserva nula o sin ID");
-            return;
-        }
+        if (reserva == null || reserva.getId() == null) return;
         executor.execute(() -> {
-            ReservaEntity entity = new ReservaEntity(
-                    reserva.getId(),
-                    reserva.getActividadId(),
-                    reserva.getActividadNombre(),
-                    reserva.getDestino() != null ? reserva.getDestino() : "",
-                    reserva.getPuntoEncuentro() != null ? reserva.getPuntoEncuentro() : "",
-                    reserva.getFecha(),
-                    reserva.getHorario(),
-                    reserva.getCantidadParticipantes(),
-                    reserva.getEstado(),
-                    reserva.getPoliticaCancelacion() != null ? reserva.getPoliticaCancelacion() : "",
-                    reserva.getImagen() != null ? reserva.getImagen() : "",
-                    System.currentTimeMillis()
-            );
-            reservaDao.insert(entity);
+            reservaDao.insert(mapToEntity(reserva));
         });
     }
 
@@ -129,24 +112,32 @@ public class ReservaRepository {
         if (reservas == null) return;
         executor.execute(() -> {
             List<ReservaEntity> entities = new ArrayList<>();
-            for (Reserva reserva : reservas) {
-                if (reserva.getId() == null) continue;
-                entities.add(new ReservaEntity(
-                        reserva.getId(),
-                        reserva.getActividadId(),
-                        reserva.getActividadNombre(),
-                        reserva.getDestino() != null ? reserva.getDestino() : "",
-                        reserva.getPuntoEncuentro() != null ? reserva.getPuntoEncuentro() : "",
-                        reserva.getFecha(),
-                        reserva.getHorario(),
-                        reserva.getCantidadParticipantes(),
-                        reserva.getEstado(),
-                        reserva.getPoliticaCancelacion() != null ? reserva.getPoliticaCancelacion() : "",
-                        reserva.getImagen() != null ? reserva.getImagen() : "",
-                        System.currentTimeMillis()
-                ));
+            for (Reserva r : reservas) {
+                if (r.getId() != null) entities.add(mapToEntity(r));
             }
             reservaDao.insertAll(entities);
         });
+    }
+
+    private ReservaEntity mapToEntity(Reserva r) {
+        String itinerarioCsv = "";
+        if (r.getItinerario() != null && !r.getItinerario().isEmpty()) {
+            itinerarioCsv = String.join("|", r.getItinerario());
+        }
+        return new ReservaEntity(
+                r.getId(),
+                r.getActividadId(),
+                r.getActividadNombre(),
+                r.getDestino() != null ? r.getDestino() : "",
+                r.getPuntoEncuentro() != null ? r.getPuntoEncuentro() : "",
+                r.getFecha(),
+                r.getHorario(),
+                r.getCantidadParticipantes(),
+                r.getEstado(),
+                r.getPoliticaCancelacion() != null ? r.getPoliticaCancelacion() : "",
+                r.getImagen() != null ? r.getImagen() : "",
+                System.currentTimeMillis(),
+                itinerarioCsv
+        );
     }
 }

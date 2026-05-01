@@ -16,6 +16,25 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_login_to_otp"
+            app:destination="@id/otpFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/otpFragment"
+        android:name="com.example.desarrollo_apps_1.ui.auth.OtpFragment"
+        android:label="Verificar OTP"
+        tools:layout="@layout/fragment_otp">
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_otp_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

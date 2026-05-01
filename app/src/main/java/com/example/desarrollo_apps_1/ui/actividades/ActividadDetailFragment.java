@@ -18,8 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.example.desarrollo_apps_1.R;
 import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.model.Actividad;
@@ -29,11 +29,15 @@ import com.example.desarrollo_apps_1.data.model.Reserva;
 import com.example.desarrollo_apps_1.data.model.ReservaListResponse;
 import com.example.desarrollo_apps_1.data.model.ReviewResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -60,6 +64,8 @@ public class ActividadDetailFragment extends Fragment {
     private LinearLayout layoutUserReview;
     private RatingBar rbUserActividad, rbUserGuia;
     private TextView tvUserComentario;
+    private ViewPager2 vpGallery;
+    private TabLayout tabDots;
 
     @Nullable
     @Override
@@ -78,8 +84,10 @@ public class ActividadDetailFragment extends Fragment {
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
         TextView tvError = view.findViewById(R.id.tvError);
         FrameLayout imageContainer = view.findViewById(R.id.imageContainer);
-        ImageView ivActividad = view.findViewById(R.id.ivActividad);
         ivFavorito = view.findViewById(R.id.ivFavorito);
+        vpGallery = view.findViewById(R.id.vpGallery);
+        tabDots = view.findViewById(R.id.tabDots);
+
         TextView tvNombre = view.findViewById(R.id.tvNombre);
         TextView tvFecha = view.findViewById(R.id.tvFecha);
         TextView tvDestino = view.findViewById(R.id.tvDestino);
@@ -112,7 +120,9 @@ public class ActividadDetailFragment extends Fragment {
                     Actividad actividad = response.body();
                     fechaActividad = actividad.getFecha();
 
-                    Glide.with(requireContext()).load(actividad.getImagen()).into(ivActividad);
+                    // Configurar Galería
+                    setupGallery(actividad);
+
                     tvNombre.setText(actividad.getNombre());
                     tvDestino.setText("📍 " + actividad.getDestino());
                     tvCategoria.setText(actividad.getCategoria());
@@ -153,7 +163,6 @@ public class ActividadDetailFragment extends Fragment {
                     });
 
                     obtenerUidYBuscarReview();
-                    
                     checkEligibilityForReview();
                 } else {
                     tvError.setText("Error al cargar detalle");
@@ -170,18 +179,30 @@ public class ActividadDetailFragment extends Fragment {
         ivFavorito.setOnClickListener(v -> toggleFavorito());
     }
 
+    private void setupGallery(Actividad actividad) {
+        List<String> images = new ArrayList<>();
+        if (actividad.getFotos() != null && !actividad.getFotos().isEmpty()) {
+            images.addAll(actividad.getFotos());
+        } else if (actividad.getImagen() != null) {
+            images.add(actividad.getImagen());
+        }
+
+        GalleryAdapter adapter = new GalleryAdapter(images);
+        vpGallery.setAdapter(adapter);
+
+        new TabLayoutMediator(tabDots, vpGallery, (tab, position) -> {
+            // Sin texto para los indicadores de puntos
+        }).attach();
+    }
+
     private void obtenerUidYBuscarReview() {
-        Log.d(TAG, "Llamando a GET /profile/me para obtener UID real...");
         apiService.getProfile().enqueue(new Callback<ProfileResponse>() {
             @Override
             public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getUser() != null) {
                     String uid = response.body().getUser().getUid();
-                    Log.d(TAG, "UID obtenido de perfil: " + uid);
                     tokenManager.saveUserId(uid);
                     executeGetReview(uid);
-                } else {
-                    Log.e(TAG, "Fallo al obtener UID del perfil: " + response.code());
                 }
             }
             @Override
@@ -221,24 +242,19 @@ public class ActividadDetailFragment extends Fragment {
     }
 
     private void executeGetReview(String userId) {
-        Log.i(TAG, "PETICION REVIEW: userId=" + userId + ", actividadId=" + actividadId);
         apiService.getReview(userId, actividadId).enqueue(new Callback<ReviewResponse>() {
             @Override
             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                Log.i(TAG, "RESPUESTA REVIEW: Code=" + response.code());
                 if (response.isSuccessful() && response.body() != null && response.body().getReview() != null) {
                     showUserReview(response.body().getReview());
                 }
             }
             @Override
-            public void onFailure(Call<ReviewResponse> call, Throwable t) {
-                Log.e(TAG, "ERROR RED REVIEW: " + t.getMessage());
-            }
+            public void onFailure(Call<ReviewResponse> call, Throwable t) {}
         });
     }
 
     private void showUserReview(ReviewResponse.ReviewData review) {
-        Log.i(TAG, "Mostrando reseña previa en UI");
         layoutUserReview.setVisibility(View.VISIBLE);
         rbUserActividad.setRating(review.getCalificacionActividad());
         rbUserGuia.setRating(review.getCalificacionGuia());
@@ -267,10 +283,13 @@ public class ActividadDetailFragment extends Fragment {
             } catch (ParseException ignored) {}
         }
         if (date != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            cal.add(Calendar.HOUR, 48);
-            return new Date().after(cal.getTime());
+            Date now = new Date();
+            Calendar calLimit = Calendar.getInstance();
+            calLimit.setTime(date);
+            calLimit.add(Calendar.HOUR, 48);
+            
+            // Período abierto si hoy es DESPUÉS de la actividad y ANTES de que pasen 48hs
+            return now.after(date) && now.before(calLimit.getTime());
         }
         return false;
     }
@@ -292,12 +311,25 @@ public class ActividadDetailFragment extends Fragment {
     private void toggleFavorito() {
         esFavorito = !esFavorito;
         ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+
         Call<Void> call = esFavorito ? apiService.addFavorito(actividadId) : apiService.removeFavorito(actividadId);
         call.enqueue(new Callback<Void>() {
             @Override public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (!response.isSuccessful()) { esFavorito = !esFavorito; ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); }
+                if (!response.isSuccessful()) { 
+                    esFavorito = !esFavorito; 
+                    ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); 
+                }
             }
-            @Override public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) { esFavorito = !esFavorito; ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); }
+            @Override public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) { 
+                esFavorito = !esFavorito; 
+                ivFavorito.setImageResource(esFavorito ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline); 
+            }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        vpGallery = null;
     }
 }

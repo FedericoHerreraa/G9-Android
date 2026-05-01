@@ -78,17 +78,25 @@ public class LoginFragment extends Fragment {
                 binding.btnLogin.setEnabled(false);
             } else if (state == AuthRepository.AuthState.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
-                if (binding.cbBiometrics.getVisibility() == View.VISIBLE) {
-                    disposables.add(settingsManager.setBiometricEnabled(binding.cbBiometrics.isChecked())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe());
+                binding.btnLogin.setEnabled(true);
+                
+                if (tokenManager.getToken() != null) {
+                    // Login exitoso (clásico o después de verificar OTP)
+                    if (binding.cbBiometrics.getVisibility() == View.VISIBLE) {
+                        disposables.add(settingsManager.setBiometricEnabled(binding.cbBiometrics.isChecked())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe());
+                    }
+                    irAHome();
+                } else {
+                    // OTP enviado con éxito, ir a verificar
+                    irAOtp();
                 }
-                irAHome();
             } else if (state == AuthRepository.AuthState.ERROR) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnLogin.setEnabled(true);
-                Toast.makeText(getContext(), "Error en la autenticación", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error en la operación", Toast.LENGTH_SHORT).show();
             } else {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnLogin.setEnabled(true);
@@ -119,9 +127,6 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                     super.onAuthenticationError(errorCode, errString);
-                    if (errorCode != BiometricPrompt.ERROR_USER_CANCELED && errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                        Toast.makeText(getContext(), "Error de autenticación: " + errString, Toast.LENGTH_SHORT).show();
-                    }
                 }
 
                 @Override
@@ -133,13 +138,12 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onAuthenticationFailed() {
                     super.onAuthenticationFailed();
-                    Toast.makeText(getContext(), "Autenticación fallida", Toast.LENGTH_SHORT).show();
                 }
             });
 
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Ingreso Biométrico")
-                .setSubtitle("Usa tu huella para entrar a XploreNow")
+                .setSubtitle("Usa tu huella para entrar")
                 .setNegativeButtonText("Usar contraseña")
                 .build();
 
@@ -149,6 +153,15 @@ public class LoginFragment extends Fragment {
     private void irAHome() {
         if (getView() != null) {
             Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_homeFragment);
+        }
+    }
+
+    private void irAOtp() {
+        if (getView() != null) {
+            String email = binding.etEmail.getText().toString().trim();
+            Bundle args = new Bundle();
+            args.putString("email", email);
+            Navigation.findNavController(requireView()).navigate(R.id.action_login_to_otp, args);
         }
     }
 
@@ -171,16 +184,6 @@ public class LoginFragment extends Fragment {
         switch (biometricManager.canAuthenticate(authenticators)) {
             case BiometricManager.BIOMETRIC_SUCCESS:
                 binding.cbBiometrics.setVisibility(View.VISIBLE);
-                break;
-            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-                binding.cbBiometrics.setVisibility(View.VISIBLE);
-                binding.cbBiometrics.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    if (isChecked) {
-                        final Intent enrollIntent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
-                        enrollIntent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, authenticators);
-                        startActivity(enrollIntent);
-                    }
-                });
                 break;
             default:
                 binding.cbBiometrics.setVisibility(View.GONE);

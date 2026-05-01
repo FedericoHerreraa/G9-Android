@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Comentario"
+            android:text="Comentario (opcional)"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -50,9 +50,10 @@
             android:id="@+id/etComentario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contanos tu experiencia..."
+            android:hint="Contanos tu experiencia (máx. 300 caracteres)..."
             android:minLines="3"
-            android:gravity="top" />
+            android:gravity="top"
+            android:maxLength="300" />
 
         <Button
             android:id="@+id/btnEnviarReview"
