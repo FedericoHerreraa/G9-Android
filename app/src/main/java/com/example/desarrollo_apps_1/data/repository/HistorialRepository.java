@@ -35,6 +35,10 @@ public class HistorialRepository {
         return historialDao.getAll();
     }
 
+    public LiveData<List<HistorialEntity>> getHistorialFiltrado(String query, String fecha) {
+        return historialDao.getFiltered(query, fecha);
+    }
+
     public void refreshHistorial(String fechaInicio, String fechaFin, String destino) {
         apiService.getMisReservas().enqueue(new Callback<ReservaListResponse>() {
             @Override
@@ -64,25 +68,19 @@ public class HistorialRepository {
                                 if (responseAct.isSuccessful() && responseAct.body() != null) {
                                     Actividad act = responseAct.body();
                                     
-                                    // Filtro manual de destino si se solicitó
-                                    boolean matchesDestino = true;
-                                    if (destino != null && !destino.isEmpty()) {
-                                        matchesDestino = act.getDestino().toLowerCase().contains(destino.toLowerCase());
-                                    }
-
-                                    if (matchesDestino) {
-                                        entities.add(new HistorialEntity(
-                                                res.getId().hashCode(),
-                                                act.getId(),
-                                                act.getNombre(),
-                                                act.getDestino(),
-                                                act.getFecha(), // Usamos la fecha de la actividad, no de la reserva
-                                                act.getGuia(),
-                                                act.getDuracion(),
-                                                act.getImagen(),
-                                                null, null, null
-                                        ));
-                                    }
+                                    // Usamos res.getFecha() (la fecha de la reserva elegida por el usuario)
+                                    // en lugar de act.getFecha() (la fecha general de la excursión)
+                                    entities.add(new HistorialEntity(
+                                            res.getId().hashCode(),
+                                            act.getId(),
+                                            act.getNombre(),
+                                            act.getDestino(),
+                                            res.getFecha(),
+                                            act.getGuia(),
+                                            act.getDuracion(),
+                                            act.getImagen(),
+                                            null, null, null
+                                    ));
                                 }
                                 checkFinished();
                             }

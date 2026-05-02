@@ -17,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -34,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -42,8 +42,7 @@ public class HistorialFragment extends Fragment {
     private FragmentHistorialBinding binding;
     private HistorialViewModel viewModel;
     private HistorialAdapter adapter;
-    private String fechaInicio = "";
-    private String fechaFin = "";
+    private String fechaSeleccionada = "";
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -120,9 +119,6 @@ public class HistorialFragment extends Fragment {
 
     private void setupRecyclerView() {
         adapter = new HistorialAdapter(item -> {
-            // El punto 9 pide acceder al detalle y a la calificación dejada.
-            // Si ya tiene calificación, mostramos el detalle de la calificación.
-            // Si no la tiene, navegamos al detalle de la actividad donde está el botón para calificar.
             if (item.getCalificacionActividad() != null) {
                 showReviewDialog(item);
             } else {
@@ -152,16 +148,28 @@ public class HistorialFragment extends Fragment {
 
     private void setupFilters() {
         binding.btnFilterDate.setOnClickListener(v -> {
-            MaterialDatePicker<Pair<Long, Long>> picker = MaterialDatePicker.Builder.dateRangePicker()
-                    .setTitleText("Seleccionar Rango de Fechas")
+            MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Seleccionar Fecha")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .setNegativeButtonText("Limpiar")
                     .build();
 
             picker.addOnPositiveButtonClickListener(selection -> {
+                // FIX: Forzamos el uso de UTC para evitar el desfase de zona horaria (el "día anterior")
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                fechaInicio = sdf.format(new Date(selection.first));
-                fechaFin = sdf.format(new Date(selection.second));
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+                fechaSeleccionada = sdf.format(new Date(selection));
+                binding.btnFilterDate.setText(fechaSeleccionada);
                 applyFilters();
             });
+
+            picker.addOnNegativeButtonClickListener(v1 -> {
+                fechaSeleccionada = "";
+                binding.btnFilterDate.setText("FECHAS");
+                applyFilters();
+            });
+
             picker.show(getChildFragmentManager(), "DATE_PICKER");
         });
 
@@ -178,7 +186,8 @@ public class HistorialFragment extends Fragment {
     }
 
     private void applyFilters() {
-        viewModel.setFiltros(fechaInicio, fechaFin, binding.etFilterDestino.getText().toString());
+        String query = binding.etFilterDestino.getText().toString().trim();
+        viewModel.setFiltros(query, fechaSeleccionada);
     }
 
     private void observeViewModel() {
