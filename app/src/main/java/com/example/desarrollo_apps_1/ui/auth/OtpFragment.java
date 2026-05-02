@@ -13,8 +13,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.desarrollo_apps_1.R;
+import com.example.desarrollo_apps_1.data.local.TokenManager;
 import com.example.desarrollo_apps_1.data.repository.AuthRepository;
 import com.example.desarrollo_apps_1.databinding.FragmentOtpBinding;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -24,6 +27,9 @@ public class OtpFragment extends Fragment {
     private FragmentOtpBinding binding;
     private AuthViewModel authViewModel;
     private String email;
+
+    @Inject
+    TokenManager tokenManager;
 
     @Nullable
     @Override
@@ -65,11 +71,15 @@ public class OtpFragment extends Fragment {
                 binding.btnVerifyOtp.setEnabled(false);
             } else if (state == AuthRepository.AuthState.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
-                irAHome();
+                if (tokenManager.getToken() != null) {
+                    irAHome();
+                } else {
+                    binding.btnVerifyOtp.setEnabled(true);
+                }
             } else if (state == AuthRepository.AuthState.ERROR) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerifyOtp.setEnabled(true);
-                Toast.makeText(getContext(), "Código inválido o expirado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error en la operación", Toast.LENGTH_SHORT).show();
             } else {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnVerifyOtp.setEnabled(true);
