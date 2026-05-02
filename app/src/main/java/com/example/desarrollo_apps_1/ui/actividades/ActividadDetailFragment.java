@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 
@@ -66,6 +67,8 @@ public class ActividadDetailFragment extends Fragment {
     private TextView tvUserComentario;
     private ViewPager2 vpGallery;
     private TabLayout tabDots;
+
+    private boolean yaTieneReview = false;
 
     @Nullable
     @Override
@@ -222,7 +225,7 @@ public class ActividadDetailFragment extends Fragment {
                             String resActIdStr = reserva.getActividadId();
                             int resActId = Integer.parseInt(resActIdStr.matches("\\d+") ? resActIdStr : "0");
                             if (resActId == actividadId && "finalizada".equalsIgnoreCase(reserva.getEstado())) {
-                                if (isReviewPeriodOpen(fechaActividad)) {
+                                if (isReviewPeriodOpen(fechaActividad) && !yaTieneReview) {
                                     btnCalificar.setVisibility(View.VISIBLE);
                                     btnCalificar.setOnClickListener(v -> {
                                         Bundle args = new Bundle();
@@ -246,6 +249,8 @@ public class ActividadDetailFragment extends Fragment {
             @Override
             public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getReview() != null) {
+                    yaTieneReview = true;
+                    if (btnCalificar != null) btnCalificar.setVisibility(View.GONE);
                     showUserReview(response.body().getReview());
                 }
             }
@@ -265,6 +270,7 @@ public class ActividadDetailFragment extends Fragment {
     private String formatDate(String dateStr) {
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = inputFormat.parse(dateStr);
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             return outputFormat.format(date);
@@ -272,26 +278,29 @@ public class ActividadDetailFragment extends Fragment {
     }
 
     private boolean isReviewPeriodOpen(String fechaStr) {
-        if (fechaStr == null) return false;
+        if (fechaStr == null) return true;
         String[] formats = {"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy", "yyyy-MM-dd"};
         Date date = null;
         for (String format : formats) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+                if (format.contains("'Z'")) {
+                    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                }
                 date = sdf.parse(fechaStr);
                 if (date != null) break;
             } catch (ParseException ignored) {}
         }
         if (date != null) {
             Date now = new Date();
+            // Extendemos el límite a 30 días y corregimos el problema de zona horaria
             Calendar calLimit = Calendar.getInstance();
             calLimit.setTime(date);
-            calLimit.add(Calendar.HOUR, 48);
+            calLimit.add(Calendar.DAY_OF_MONTH, 30);
             
-            // Período abierto si hoy es DESPUÉS de la actividad y ANTES de que pasen 48hs
             return now.after(date) && now.before(calLimit.getTime());
         }
-        return false;
+        return true;
     }
 
     private void cargarEstadoFavorito() {
