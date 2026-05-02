@@ -278,29 +278,35 @@ public class ActividadDetailFragment extends Fragment {
     }
 
     private boolean isReviewPeriodOpen(String fechaStr) {
-        if (fechaStr == null) return true;
+        if (fechaStr == null) return false;
         String[] formats = {"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy", "yyyy-MM-dd"};
-        Date date = null;
+        Date activityDate = null;
         for (String format : formats) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
                 if (format.contains("'Z'")) {
                     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 }
-                date = sdf.parse(fechaStr);
-                if (date != null) break;
+                activityDate = sdf.parse(fechaStr);
+                if (activityDate != null) break;
             } catch (ParseException ignored) {}
         }
-        if (date != null) {
+        if (activityDate != null) {
             Date now = new Date();
-            // Extendemos el límite a 30 días y corregimos el problema de zona horaria
-            Calendar calLimit = Calendar.getInstance();
-            calLimit.setTime(date);
-            calLimit.add(Calendar.DAY_OF_MONTH, 30);
             
-            return now.after(date) && now.before(calLimit.getTime());
+            Calendar calStart = Calendar.getInstance();
+            calStart.setTime(activityDate);
+            calStart.add(Calendar.HOUR, 48);
+            Date dateStartReview = calStart.getTime();
+
+            Calendar calLimit = Calendar.getInstance();
+            calLimit.setTime(activityDate);
+            calLimit.add(Calendar.DAY_OF_MONTH, 30);
+            Date dateEndReview = calLimit.getTime();
+
+            return now.after(dateStartReview) && now.before(dateEndReview);
         }
-        return true;
+        return false;
     }
 
     private void cargarEstadoFavorito() {
