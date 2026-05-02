@@ -15,6 +15,12 @@ public interface HistorialDao {
     @Query("SELECT * FROM historial ORDER BY fecha DESC")
     LiveData<List<HistorialEntity>> getAll();
 
+    @Query("SELECT * FROM historial WHERE " +
+           "(LOWER(nombreActividad) LIKE '%' || LOWER(:query) || '%' OR LOWER(destino) LIKE '%' || LOWER(:query) || '%' OR :query = '') " +
+           "AND (:fecha = '' OR SUBSTR(fecha, 1, 10) = :fecha) " +
+           "ORDER BY fecha DESC")
+    LiveData<List<HistorialEntity>> getFiltered(String query, String fecha);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<HistorialEntity> historial);
 

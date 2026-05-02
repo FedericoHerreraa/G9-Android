@@ -2,6 +2,7 @@ package com.example.desarrollo_apps_1.ui.historial;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.example.desarrollo_apps_1.data.local.entity.HistorialEntity;
@@ -16,28 +17,30 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class HistorialViewModel extends ViewModel {
     private final HistorialRepository repository;
-    private final MutableLiveData<String> _destino = new MutableLiveData<>("");
-    private final MutableLiveData<String> _fechaInicio = new MutableLiveData<>("");
-    private final MutableLiveData<String> _fechaFin = new MutableLiveData<>("");
+    private final MutableLiveData<FilterParams> filters = new MutableLiveData<>(new FilterParams("", ""));
 
     @Inject
     public HistorialViewModel(HistorialRepository repository) {
         this.repository = repository;
-        refresh();
+        // Sincronizar con el servidor al iniciar
+        repository.refreshHistorial("", "", "");
     }
 
     public LiveData<List<HistorialEntity>> getHistorial() {
-        return repository.getHistorialLocal();
+        return Transformations.switchMap(filters, params -> 
+            repository.getHistorialFiltrado(params.query, params.fecha)
+        );
     }
 
-    public void setFiltros(String fechaInicio, String fechaFin, String destino) {
-        _fechaInicio.setValue(fechaInicio);
-        _fechaFin.setValue(fechaFin);
-        _destino.setValue(destino);
-        refresh();
+    public void setFiltros(String query, String fecha) {
+        filters.setValue(new FilterParams(query, fecha));
     }
 
-    public void refresh() {
-        repository.refreshHistorial(_fechaInicio.getValue(), _fechaFin.getValue(), _destino.getValue());
+    private static class FilterParams {
+        final String query, fecha;
+        FilterParams(String query, String fecha) {
+            this.query = query;
+            this.fecha = fecha;
+        }
     }
 }
