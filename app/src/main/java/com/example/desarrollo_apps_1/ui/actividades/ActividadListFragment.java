@@ -22,6 +22,7 @@ import com.example.desarrollo_apps_1.data.model.Favorito;
 import com.example.desarrollo_apps_1.data.model.FavoritosResponse;
 import com.example.desarrollo_apps_1.data.network.ApiService;
 import com.example.desarrollo_apps_1.databinding.FragmentActividadListBinding;
+import com.example.desarrollo_apps_1.data.model.RecomendadasResponse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -189,24 +190,26 @@ public class ActividadListFragment extends Fragment {
         if (preferencias == null || preferencias.isEmpty()) return;
 
         apiService.getRecomendadas(preferencias)
-                .enqueue(new Callback<List<Actividad>>() {
+                .enqueue(new Callback<RecomendadasResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<List<Actividad>> call,
-                                           @NonNull Response<List<Actividad>> response) {
+                    public void onResponse(@NonNull Call<RecomendadasResponse> call,
+                                           @NonNull Response<RecomendadasResponse> response) {
                         if (binding == null) return;
-                        if (response.isSuccessful() && response.body() != null
-                                && !response.body().isEmpty()) {
-                            ActividadAdapter recomendadasAdapter = new ActividadAdapter(
-                                    response.body(),
-                                    ActividadListFragment.this::navegarADetalle
-                            );
-                            binding.rvDestacadas.setAdapter(recomendadasAdapter);
-                            binding.layoutDestacadas.setVisibility(View.VISIBLE);
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<Actividad> results = response.body().getResults();
+                            if (!results.isEmpty()) {
+                                ActividadAdapter recomendadasAdapter = new ActividadAdapter(
+                                        results,
+                                        ActividadListFragment.this::navegarADetalle
+                                );
+                                binding.rvDestacadas.setAdapter(recomendadasAdapter);
+                                binding.layoutDestacadas.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<List<Actividad>> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<RecomendadasResponse> call, @NonNull Throwable t) {
                         Log.e(TAG, "Error cargando recomendadas: " + t.getMessage());
                     }
                 });

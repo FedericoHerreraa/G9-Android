@@ -22,6 +22,7 @@ import com.example.desarrollo_apps_1.data.repository.ProfileRepository;
 import com.example.desarrollo_apps_1.databinding.FragmentHomeBinding;
 import com.example.desarrollo_apps_1.ui.actividades.ActividadAdapter;
 import com.example.desarrollo_apps_1.ui.noticias.NoticiaAdapter;
+import com.example.desarrollo_apps_1.data.model.RecomendadasResponse;
 
 import java.util.List;
 
@@ -71,37 +72,35 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadDynamicContent() {
-        // 1. Cargar Recomendados (usando preferencias guardadas en TokenManager como fallback inicial)
-        loadRecomendados(null);
-
-        // 2. Cargar Noticias
         loadNoticias();
     }
 
     private void loadRecomendados(List<String> prefsList) {
-        String prefs = "";
-        if (prefsList != null && !prefsList.isEmpty()) {
-            prefs = String.join(",", prefsList);
-        } else {
-            // Intentar recuperar del tokenManager si no viene del perfil fresco
-            // prefs = tokenManager.getPreferencias(); // Si tuvieras este método
+        if (prefsList == null || prefsList.isEmpty()) {
+            return;
         }
+        String prefs = String.join(",", prefsList);
 
-        apiService.getRecomendadas(prefs).enqueue(new Callback<List<Actividad>>() {
+        apiService.getRecomendadas(prefs).enqueue(new Callback<RecomendadasResponse>() {
             @Override
-            public void onResponse(@NonNull Call<List<Actividad>> call, @NonNull Response<List<Actividad>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    ActividadAdapter adapter = new ActividadAdapter(response.body(), actividadId -> {
-                        Bundle args = new Bundle();
-                        args.putInt("actividadId", actividadId);
-                        Navigation.findNavController(requireView()).navigate(R.id.actividadDetailFragment, args);
-                    });
-                    binding.rvRecomendados.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-                    binding.rvRecomendados.setAdapter(adapter);
+            public void onResponse(@NonNull Call<RecomendadasResponse> call, @NonNull Response<RecomendadasResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Actividad> results = response.body().getResults();
+                    if (!results.isEmpty()) {
+                        ActividadAdapter adapter = new ActividadAdapter(results, actividadId -> {
+                            Bundle args = new Bundle();
+                            args.putInt("actividadId", actividadId);
+                            Navigation.findNavController(requireView()).navigate(R.id.actividadDetailFragment, args);
+                        });
+                        binding.rvRecomendados.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+                        binding.rvRecomendados.setAdapter(adapter);
+                    }
+                } else {
+                    Log.e(TAG, "Error recomendados: HTTP " + response.code());
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<List<Actividad>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<RecomendadasResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "Error recomendados: " + t.getMessage());
             }
         });
