@@ -18,6 +18,7 @@ import com.example.desarrollo_apps_1.data.model.ReviewRequest;
 import com.example.desarrollo_apps_1.data.model.ReviewResponse;
 import com.example.desarrollo_apps_1.data.model.UpdateProfileRequest;
 import com.example.desarrollo_apps_1.data.model.UserResponse;
+import com.example.desarrollo_apps_1.data.model.RecomendadasResponse;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public interface ApiService {
     Call<Actividad> getActividadById(@Path("id") int id);
 
     @GET("actividades/recomendadas")
-    Call<List<Actividad>> getRecomendadas(@Query("preferencias") String preferencias);
+    Call<RecomendadasResponse> getRecomendadas(@Query("preferencias") String preferencias);
 
     @GET("reservas")
     Call<ReservaListResponse> getMisReservas();
